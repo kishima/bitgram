@@ -1,0 +1,24 @@
+name: Preset request
+description: Request a built-in protocol header or register-map preset
+body:
+  - type: input
+    id: name
+    attributes:
+      label: Protocol or register name
+      description: Include the exact version or variant.
+    validations:
+      required: true
+  - type: input
+    id: reference
+    attributes:
+      label: Specification URL
+      description: Link to the RFC, protocol specification, or device datasheet and identify the relevant section.
+    validations:
+      required: true
+  - type: textarea
+    id: fields
+    attributes:
+      label: Field layout
+      description: Include field names, bit widths, bit numbering, and any optional or variable-length fields.
+    validations:
+      required: true

@@ -1,0 +1,2 @@
+[codespell]
+skip = .git,.idea,.bundle,.rubocop_cache,.yardoc,coverage,doc,pkg,tmp,vendor,Gemfile.lock,*.gem

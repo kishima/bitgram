@@ -12,6 +12,10 @@ bundle exec yard stats --list-undoc
 
 The default task runs RSpec and RuboCop. Tests enforce 90% line coverage, compare deterministic golden files, check the JSON Schema against the validator, and exercise 1,000 seeded random layouts. Golden files can be regenerated with `UPDATE_GOLDEN=1 bundle exec rspec`; inspect the resulting text and images before accepting them.
 
+Repository checks also run `actionlint`, `yamllint --strict .`, `codespell --check-filenames --check-hidden .`, and `zizmor .github/workflows`. Install these tools separately to run the same checks locally. The YAML configuration excludes intentionally invalid fixtures; both linters exclude local build artifacts. CI validates packaging with `gem build --strict bitgram.gemspec`.
+
+Dependabot checks Bundler and GitHub Actions dependencies weekly. Third-party Actions are pinned to commit hashes. CodeQL scans Ruby and GitHub Actions on pushes, pull requests, and a weekly schedule. The manual release workflow installs dependencies without a shared cache and serializes publication runs.
+
 For all native backends, install libvips, librsvg, ImageMagick and CJK fonts as described in the README, then run:
 
 ```sh

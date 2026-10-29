@@ -1,0 +1,24 @@
+extends: default
+ignore: |
+  .git/
+  .idea/
+  .bundle/
+  .rubocop_cache/
+  .yardoc/
+  coverage/
+  doc/
+  pkg/
+  tmp/
+  vendor/
+  spec/fixtures/invalid/
+
+rules:
+  braces:
+    max-spaces-inside: 1
+  comments:
+    min-spaces-from-content: 1
+  document-start: disable
+  line-length:
+    max: 200
+  truthy:
+    check-keys: false

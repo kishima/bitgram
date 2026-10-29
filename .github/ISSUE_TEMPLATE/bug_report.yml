@@ -1,0 +1,38 @@
+name: Bug report
+description: Report a Bitgram parsing, layout, or rendering problem
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: Describe the problem and what you expected instead.
+    validations:
+      required: true
+  - type: textarea
+    id: definition
+    attributes:
+      label: Minimal definition
+      description: Include the smallest YAML, JSON, or Ruby definition that reproduces the problem.
+      render: text
+    validations:
+      required: true
+  - type: textarea
+    id: output
+    attributes:
+      label: Command and output
+      description: Include the full command or Ruby API call, error output, and an image if the problem is visual.
+    validations:
+      required: true
+  - type: input
+    id: versions
+    attributes:
+      label: Ruby, Bitgram, and operating system versions
+      placeholder: Ruby 4.0.9; bitgram 0.1.0; macOS 26
+    validations:
+      required: true
+  - type: textarea
+    id: raster
+    attributes:
+      label: Raster environment (PNG/JPEG issues)
+      description: Paste the output of `bitgram doctor` and mention any custom fonts or theme.
+      render: text

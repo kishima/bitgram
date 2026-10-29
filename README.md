@@ -1,6 +1,90 @@
-# Bitgram
+<h1 align="center">Bitgram</h1>
 
-Generate packet headers, bit fields, and register maps from YAML, JSON, or Ruby. One layout produces RFC-style ASCII, Unicode box drawings, SVG, PNG, and JPEG.
+<p align="center">
+  <strong>Packet headers, bit fields, and register maps from YAML, JSON, or Ruby.</strong><br>
+  One definition. ASCII, Unicode, SVG, PNG, and JPEG.
+</p>
+
+<p align="center">
+  <a href="bitgram.gemspec"><img src="https://img.shields.io/badge/Ruby-%E2%89%A5%203.3-CC342D?style=flat-square" alt="Ruby 3.3 or later"></a>
+  <a href="LICENSE.txt"><img src="https://img.shields.io/badge/License-MIT-2563EB?style=flat-square" alt="MIT license"></a>
+</p>
+
+<p align="center">
+  <a href="#features">Features</a> ·
+  <a href="#installation">Installation</a> ·
+  <a href="#quick-start">Quick start</a> ·
+  <a href="#ruby-api">Ruby API</a> ·
+  <a href="#documentation">Documentation</a>
+</p>
+
+<p align="center">
+  <img src="examples/tcp.svg" width="880" alt="TCP header with ports, sequence numbers, vertical flag labels, a hatched reserved field, and variable-length data">
+</p>
+<p align="center"><code>bitgram render --preset tcp -o tcp.svg</code></p>
+
+## Features
+
+- **One layout, five outputs.** Generate text for READMEs and RFC-style specifications, SVG for the web, or PNG and JPEG for documents and slides.
+- **Flexible bit layouts.** Choose 1–128 bits per row, split fields across rows, merge address blocks, and represent variable-length data.
+- **Readable labels.** Automatic wrapping, short names, vertical labels, and footnotes, with Unicode display widths for Japanese text.
+- **Style and context.** Light, dark, monochrome, and automatic themes; field colors, reserved hatching, optional borders, and byte offsets.
+- **Ready-made protocols.** Start with TCP, UDP, IPv4, IPv6, ICMP Echo, or ARP, then customize the definition.
+- **Reproducible output.** Deterministic diagrams, validation with paths and YAML line numbers, and a shared rendering pipeline for the CLI and Ruby API.
+
+## Installation
+
+Requires **Ruby 3.3+**. Install from a source checkout:
+
+```sh
+bundle install
+bundle exec rake install
+```
+
+ASCII, Unicode, and SVG use the `unicode-display_width` gem and need no native rendering tools.
+
+<details>
+<summary><strong>Optional: PNG and JPEG support</strong></summary>
+
+Install one of these converters. Automatic selection follows the order below.
+
+| Backend | PNG | JPEG | Requirement |
+| --- | :---: | :---: | --- |
+| vips | ✓ | ✓ | `ruby-vips` gem + libvips |
+| rsvg | ✓ | — | `rsvg-convert` command |
+| ImageMagick | ✓ | ✓ | `magick` or `convert` command |
+
+For vips, add this to your application's Gemfile:
+
+```ruby
+gem "ruby-vips", "~> 2.3"
+```
+
+Install the native library, then run `bundle install`:
+
+```sh
+# macOS
+brew install vips
+
+# Ubuntu
+sudo apt-get install libvips-dev fonts-noto-cjk
+```
+
+Run `bitgram doctor` to check converters and CJK fonts. See the [raster settings](docs/format.md#raster) for scale, background, quality, and backend selection.
+
+</details>
+
+## Quick start
+
+Render a bundled preset immediately:
+
+```sh
+bitgram render --preset udp
+bitgram render --preset tcp -o tcp.svg
+```
+
+<details>
+<summary>See the UDP text output</summary>
 
 ```text
  0                   1                   2                   3
@@ -16,63 +100,35 @@ Generate packet headers, bit fields, and register maps from YAML, JSON, or Ruby.
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 ```
 
-<img src="examples/tcp.svg" alt="TCP header showing ports, sequence numbers, flags, and variable-length data">
+</details>
 
-## Installation
-
-Requires Ruby 3.3 or later. ASCII and SVG need only the `unicode-display_width` runtime gem.
-
-For a source checkout:
-
-```sh
-bundle install
-bundle exec rake install
-```
-
-Once published on RubyGems:
-
-```sh
-gem install bitgram
-```
-
-PNG and JPEG need an optional converter. For the preferred vips backend, add `gem "ruby-vips", "~> 2.3"` to your application's Gemfile and install libvips:
-
-```sh
-# macOS
-brew install vips librsvg imagemagick
-# Ubuntu
-sudo apt-get install libvips-dev librsvg2-bin imagemagick fonts-noto-cjk
-```
-
-Any one supported converter suffices. `rsvg-convert` supports PNG; vips and ImageMagick support PNG and JPEG. Automatic selection tries vips, rsvg, then ImageMagick. Run `bitgram doctor` to inspect availability and Japanese fonts.
-
-## Quick start
-
-Save this as `udp.yml`:
+To define your own diagram, save this as `udp.yml`:
 
 ```yaml
 version: 1
 title: UDP Header
 fields:
-  - { name: Source Port, bits: 16 }
+  - { name: Source Port,      bits: 16 }
   - { name: Destination Port, bits: 16 }
-  - { name: Length, bits: 16 }
-  - { name: Checksum, bits: 16 }
-  - { name: Data, bits: variable }
+  - { name: Length,           bits: 16 }
+  - { name: Checksum,         bits: 16 }
+  - { name: Data,             bits: variable }
 ```
 
+Render it, choose a style, or validate it before generating output:
+
 ```sh
-bitgram render udp.yml
 bitgram render udp.yml -o udp.svg
-bitgram render udp.yml -o udp.png --scale 2
-bitgram render --preset tcp --ascii-style unicode
-bitgram init ipv6 > ipv6.yml
+bitgram render udp.yml --ascii-style unicode
+bitgram render udp.yml -o udp.png --scale 2  # Requires a raster converter
 bitgram validate udp.yml --strict
 ```
 
-Set `layout.row_bits` for a width other than 32 bits, `layout.bit_order: lsb0` for register numbering, and `layout.offsets: hex` for byte offsets. Fields can use `bytes`, a `short` label, `reserved`, `optional`, and `fill`. See the [format reference](docs/format.md) and [CLI reference](docs/cli.md).
+Use `bitgram init ipv6 > ipv6.yml` to start from an editable preset. Browse the generated examples: [TCP](examples/tcp.svg) · [UDP](examples/udp.svg) · [IPv4](examples/ipv4.svg) · [IPv6](examples/ipv6.svg) · [ICMP](examples/icmp.svg) · [ARP](examples/arp.svg).
 
 ## Ruby API
+
+Load a file, a YAML/JSON string, a Hash, or a bundled preset:
 
 ```ruby
 require "bitgram"
@@ -80,8 +136,12 @@ require "bitgram"
 diagram = Bitgram.load_file("udp.yml")
 puts diagram.to_ascii(style: :unicode)
 diagram.save("udp.svg", theme: "dark")
-diagram.save("udp.jpg", scale: 2, quality: 85)
+diagram.save("udp.jpg", scale: 2, quality: 85) # Requires a raster converter
+```
 
+Or describe a register directly in Ruby:
+
+```ruby
 register = Bitgram.define(title: "CTRL") do
   row_bits 16
   bit_order :lsb0
@@ -90,29 +150,64 @@ register = Bitgram.define(title: "CTRL") do
   reserved 4
   field "DIV", bits: 8
 end
+
 puts register.to_ascii
 ```
 
-The [Ruby API guide](docs/ruby-api.md) covers diagnostics, overrides, and inspecting the shared layout. [Preset sources](docs/presets.md) document the six bundled protocol definitions.
+The [Ruby API guide](docs/ruby-api.md) covers Hash and string inputs, overrides, diagnostics, and access to the logical layout.
 
-## Rendering notes
+## Configuration
 
-- ASCII uses display widths for Japanese text. Unicode border characters are East Asian Ambiguous: terminals configured to render them as two columns will misalign the borders. Use RFC style or set your terminal's ambiguous width to one.
-- PNG/JPEG rendering uses installed fonts. Install a CJK font such as Noto Sans CJK JP for Japanese labels. `bitgram doctor` checks fontconfig when available.
-- SVG text measurement estimates font width. Increase `svg.char_width_ratio` or use a monospace font if your chosen font extends beyond a cell.
-- YAML aliases and object tags are rejected. Definitions are limited to 1 MiB, 10,000 fields, and 4,096 logical rows; raster output is limited to 50 million pixels. Definitions never cause network requests.
+Set options in the definition, override them from the CLI, or pass renderer keywords in Ruby.
+
+| Setting | Default | Purpose |
+| --- | --- | --- |
+| `layout.row_bits` | `32` | Bits per row, from 1 to 128 |
+| `layout.bit_order` | `msb0` | Number bits from the left or use `lsb0` from the right |
+| `layout.offsets` | `none` | Show decimal or hexadecimal byte offsets |
+| `ascii.style` | `rfc` | Choose RFC-style or Unicode borders |
+| `svg.theme` | `default` | Use `default`, `mono`, `dark`, `auto`, or a theme file |
+| `raster.scale` | `2` | Scale PNG/JPEG output |
+
+```sh
+bitgram render --preset tcp --theme dark --set layout.offsets=hex -o tcp.svg
+```
+
+Fields also support `bytes`, `short`, `value`, `reserved`, `optional`, and `fill`. See the [complete format reference](docs/format.md) and [JSON Schema](schema/bitgram.schema.json) for all settings and editor completion.
+
+## Documentation
+
+| Guide | What's inside |
+| --- | --- |
+| [Definition format](docs/format.md) | Fields, layout, themes, fitting strategies, and limits |
+| [CLI reference](docs/cli.md) | Commands, options, stdin, validation, and exit codes |
+| [Ruby API](docs/ruby-api.md) | Loading, rendering, DSL, diagnostics, and layout inspection |
+| [Protocol presets](docs/presets.md) | Bundled definitions and their RFC sources |
+| [Development](docs/development.md) | Tests, golden files, benchmarks, and implementation decisions |
+| [Releasing](docs/releasing.md) | Packaging and Trusted Publishing setup |
+
+<details>
+<summary><strong>Rendering notes and input limits</strong></summary>
+
+- Unicode borders assume ambiguous-width characters occupy one column. If your terminal displays them as two, use RFC style or adjust the terminal setting.
+- PNG/JPEG use installed fonts. Japanese labels need a CJK font such as Noto Sans CJK JP; `bitgram doctor` checks fontconfig when available.
+- SVG text widths are estimated. Increase `svg.char_width_ratio` or choose a monospace font if labels extend beyond their cells.
+- YAML aliases and object tags are rejected. Input strings and files are limited to 1 MiB, definitions to 10,000 fields and 4,096 logical rows, and raster output to 50 million pixels. Definitions never cause network requests.
+
+</details>
 
 ## Development
 
 ```sh
 bundle install
-bundle exec rake
-bundle exec rake examples
+bundle exec rake          # RSpec + RuboCop
 bundle exec yard doc
 ```
 
-Enable raster development dependencies with `bundle config set --local with raster`, then run `bundle install`. Raster integration tests skip converters unavailable on the machine; the dedicated CI job installs all three backends. See [release procedures](docs/releasing.md) for publishing setup.
+Run `RASTER=0 bundle exec rake examples` to regenerate text and SVG examples. To include PNG, install a converter and run `bundle exec rake examples`.
+
+For all raster backends, enable the optional bundle with `BUNDLE_WITH=raster bundle install`, then run `BUNDLE_WITH=raster REQUIRE_RASTER=1 bundle exec rake`. See the [development guide](docs/development.md) for prerequisites and verification details.
 
 ## License
 
-[MIT](LICENSE.txt).
+Released under the [MIT License](LICENSE.txt).

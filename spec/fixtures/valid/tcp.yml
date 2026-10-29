@@ -1,0 +1,23 @@
+version: 1
+title: TCP Header
+description: RFC 9293, Section 3.1
+fields:
+  - { name: Source Port, bits: 16 }
+  - { name: Destination Port, bits: 16 }
+  - { name: Sequence Number, bits: 32 }
+  - { name: Acknowledgment Number, bits: 32 }
+  - { name: Data Offset, bits: 4 }
+  - { name: Rsrvd, bits: 4, reserved: true }
+  - { name: CWR, bits: 1, description: Congestion Window Reduced }
+  - { name: ECE, bits: 1, description: ECN-Echo }
+  - { name: URG, bits: 1, description: Urgent pointer field is significant }
+  - { name: ACK, bits: 1, description: Acknowledgment field is significant }
+  - { name: PSH, bits: 1, description: Push function }
+  - { name: RST, bits: 1, description: Reset the connection }
+  - { name: SYN, bits: 1, description: Synchronize sequence numbers }
+  - { name: FIN, bits: 1, description: No more data from sender }
+  - { name: Window, bits: 16 }
+  - { name: Checksum, bits: 16 }
+  - { name: Urgent Pointer, bits: 16 }
+  - { name: Options, bits: variable }
+  - { name: Data, bits: variable }

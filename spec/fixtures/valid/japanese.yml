@@ -1,0 +1,4 @@
+version: 1
+fields:
+  - {name: 送信元ポート, bits: 16}
+  - {name: 宛先ポート, bits: 16}

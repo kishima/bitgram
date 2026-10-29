@@ -1,0 +1,9 @@
+background: "#ffffff"
+stroke: "#000000"
+text: "#000000"
+header_text: "#000000"
+cell_fill: "#ffffff"
+reserved_fill: "#eeeeee"
+hatch: "#777777"
+palette: []
+classes: {}

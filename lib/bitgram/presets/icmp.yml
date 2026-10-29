@@ -1,0 +1,10 @@
+version: 1
+title: ICMP Echo Header
+description: RFC 792, Echo or Echo Reply
+fields:
+  - { name: Type, bits: 8 }
+  - { name: Code, bits: 8 }
+  - { name: Checksum, bits: 16 }
+  - { name: Identifier, bits: 16 }
+  - { name: Sequence Number, bits: 16 }
+  - { name: Data, bits: variable }

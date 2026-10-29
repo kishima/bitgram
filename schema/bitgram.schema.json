@@ -1,0 +1,388 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "version": {
+      "type": "integer",
+      "const": 1
+    },
+    "title": {
+      "type": "string",
+      "maxLength": 256
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 65536
+    },
+    "layout": {
+      "$ref": "#/$defs/layout"
+    },
+    "ascii": {
+      "$ref": "#/$defs/ascii"
+    },
+    "svg": {
+      "$ref": "#/$defs/svg"
+    },
+    "raster": {
+      "$ref": "#/$defs/raster"
+    },
+    "fields": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 10000,
+      "items": {
+        "$ref": "#/$defs/field"
+      }
+    },
+    "notes": {
+      "type": "array",
+      "maxItems": 10000,
+      "items": {
+        "type": "string",
+        "maxLength": 65536
+      }
+    }
+  },
+  "required": [
+    "version",
+    "fields"
+  ],
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/ydah/bitgram/main/schema/bitgram.schema.json",
+  "title": "bitgram diagram definition",
+  "$defs": {
+    "field": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9_-]*$"
+        },
+        "short": {
+          "type": "string",
+          "maxLength": 64
+        },
+        "bits": {
+          "oneOf": [
+            {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 524288
+            },
+            {
+              "const": "variable"
+            }
+          ]
+        },
+        "bytes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 65536
+        },
+        "display_bits": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 128
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 65536
+        },
+        "value": {
+          "type": [
+            "string",
+            "integer"
+          ]
+        },
+        "reserved": {
+          "type": "boolean"
+        },
+        "optional": {
+          "type": "boolean"
+        },
+        "class": {
+          "oneOf": [
+            {
+              "type": "string",
+              "pattern": "^[a-zA-Z_][a-zA-Z0-9_-]*( [a-zA-Z_][a-zA-Z0-9_-]*)*$"
+            },
+            {
+              "type": "array",
+              "maxItems": 256,
+              "items": {
+                "type": "string",
+                "pattern": "^[a-zA-Z_][a-zA-Z0-9_-]*$"
+              }
+            }
+          ]
+        },
+        "fill": {
+          "type": "string",
+          "pattern": "^(#[0-9a-fA-F]{3}|#[0-9a-fA-F]{6}|#[0-9a-fA-F]{8}|[a-zA-Z]+|rgba?\\([0-9., %]+\\))$"
+        }
+      },
+      "required": [
+        "name"
+      ],
+      "oneOf": [
+        {
+          "required": [
+            "bits"
+          ]
+        },
+        {
+          "required": [
+            "bytes"
+          ]
+        }
+      ]
+    },
+    "color": {
+      "type": "string",
+      "pattern": "^(#[0-9a-fA-F]{3}|#[0-9a-fA-F]{6}|#[0-9a-fA-F]{8}|[a-zA-Z]+|rgba?\\([0-9., %]+\\))$"
+    },
+    "layout": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "row_bits": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 128
+        },
+        "bit_order": {
+          "type": "string",
+          "enum": [
+            "msb0",
+            "lsb0"
+          ]
+        },
+        "bit_numbers": {
+          "type": "boolean"
+        },
+        "offsets": {
+          "type": "string",
+          "enum": [
+            "none",
+            "dec",
+            "hex"
+          ]
+        },
+        "merge_rows": {
+          "type": "boolean"
+        },
+        "split_label": {
+          "type": "string",
+          "enum": [
+            "range",
+            "first",
+            "repeat"
+          ]
+        },
+        "split_suffix": {
+          "type": "string",
+          "maxLength": 256
+        },
+        "allow_partial_row": {
+          "type": "boolean"
+        }
+      }
+    },
+    "ascii": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "style": {
+          "type": "string",
+          "enum": [
+            "rfc",
+            "unicode"
+          ]
+        },
+        "indent": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 256
+        },
+        "variable_edge": {
+          "type": "string",
+          "enum": [
+            "dot",
+            "colon",
+            "slash"
+          ]
+        },
+        "max_label_lines": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 256
+        },
+        "ambiguous_width": {
+          "type": "integer",
+          "enum": [
+            1,
+            2
+          ]
+        },
+        "fit_order": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 7,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "single",
+              "wrap",
+              "short",
+              "shrink",
+              "vertical",
+              "footnote",
+              "truncate"
+            ]
+          }
+        },
+        "footnote_marker": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "title": {
+          "type": "string",
+          "enum": [
+            "none",
+            "top",
+            "bottom"
+          ]
+        }
+      }
+    },
+    "svg": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "theme": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
+        },
+        "bit_width": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 1024
+        },
+        "row_height": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 4096
+        },
+        "margin": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 4096
+        },
+        "font_family": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024,
+          "pattern": "^[^;{}<>\\\\\\x00-\\x1f]+$"
+        },
+        "font_size": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 256
+        },
+        "min_font_size": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 256
+        },
+        "char_width_ratio": {
+          "type": "number",
+          "minimum": 0.1,
+          "maximum": 10
+        },
+        "bit_number_style": {
+          "type": "string",
+          "enum": [
+            "full",
+            "rfc"
+          ]
+        },
+        "ticks": {
+          "type": "boolean"
+        },
+        "show_title": {
+          "type": "boolean"
+        },
+        "inline_styles": {
+          "type": "boolean"
+        },
+        "id_prefix": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256,
+          "pattern": "^[a-zA-Z_][a-zA-Z0-9_.-]*$"
+        },
+        "fit_order": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 7,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "single",
+              "wrap",
+              "short",
+              "shrink",
+              "vertical",
+              "footnote",
+              "truncate"
+            ]
+          }
+        }
+      }
+    },
+    "raster": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "scale": {
+          "type": "number",
+          "minimum": 0.5,
+          "maximum": 8
+        },
+        "background": {
+          "type": "string",
+          "pattern": "^(#[0-9a-fA-F]{3}|#[0-9a-fA-F]{6}|#[0-9a-fA-F]{8}|[a-zA-Z]+|rgba?\\([0-9., %]+\\))$"
+        },
+        "quality": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "rasterizer": {
+          "type": "string",
+          "enum": [
+            "auto",
+            "vips",
+            "rsvg",
+            "imagemagick"
+          ]
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 0.001,
+          "maximum": 3600
+        }
+      }
+    }
+  }
+}

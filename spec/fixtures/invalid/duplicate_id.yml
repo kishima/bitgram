@@ -1,0 +1,4 @@
+version: 1
+fields:
+  - {name: A, bits: 16, id: a}
+  - {name: B, bits: 16, id: a}

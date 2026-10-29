@@ -1,0 +1,3 @@
+version: 1
+fields:
+  - {name: A, bits: 32, bytes: 4}

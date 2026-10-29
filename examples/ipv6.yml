@@ -1,0 +1,12 @@
+version: 1
+title: IPv6 Header
+description: RFC 8200, Section 3
+fields:
+  - { name: Version, bits: 4 }
+  - { name: Traffic Class, bits: 8 }
+  - { name: Flow Label, bits: 20 }
+  - { name: Payload Length, bits: 16 }
+  - { name: Next Header, bits: 8 }
+  - { name: Hop Limit, bits: 8 }
+  - { name: Source Address, bits: 128 }
+  - { name: Destination Address, bits: 128 }

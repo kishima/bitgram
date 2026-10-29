@@ -1,0 +1,11 @@
+background: "#ffffff"
+stroke: "#1f2328"
+text: "#1f2328"
+header_text: "#57606a"
+cell_fill: "#ffffff"
+reserved_fill: "#eaeef2"
+hatch: "#8c959f"
+palette: []
+classes:
+  header:
+    fill: "#ddf4ff"

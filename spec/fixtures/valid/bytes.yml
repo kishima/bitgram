@@ -1,0 +1,4 @@
+version: 1
+layout: {allow_partial_row: true}
+fields:
+  - {name: MAC, bytes: 6}

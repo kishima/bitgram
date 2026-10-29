@@ -1,0 +1,13 @@
+version: 1
+title: ARP Header
+description: RFC 826, Ethernet and IPv4
+fields:
+  - { name: Hardware Type, bits: 16 }
+  - { name: Protocol Type, bits: 16 }
+  - { name: HLEN, bits: 8 }
+  - { name: PLEN, bits: 8 }
+  - { name: Operation, bits: 16 }
+  - { name: Sender Hardware Address, bits: 48 }
+  - { name: Sender Protocol Address, bits: 32 }
+  - { name: Target Hardware Address, bits: 48 }
+  - { name: Target Protocol Address, bits: 32 }

@@ -1,0 +1,185 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 672 210" width="672" height="210" role="img" aria-labelledby="udp-header-title udp-header-desc" class="bitgram" id="udp-header-diagram">
+<title id="udp-header-title">UDP Header</title>
+<desc id="udp-header-desc">RFC 768</desc>
+<defs>
+<pattern id="udp-header-hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+<line x1="0" y1="0" x2="0" y2="6" class="bg-hatch" stroke="#8c959f" stroke-width="1"/>
+</pattern>
+</defs>
+<style>[id=&quot;udp-header-diagram&quot;] { background: #ffffff; }
+[id=&quot;udp-header-diagram&quot;] text { font-family: Helvetica, Arial, &apos;Noto Sans CJK JP&apos;, sans-serif; fill: #1f2328; }
+[id=&quot;udp-header-diagram&quot;] .bg-cell, [id=&quot;udp-header-diagram&quot;] .bg-edge, [id=&quot;udp-header-diagram&quot;] .bg-tick { stroke: #1f2328; stroke-width: 1; }
+[id=&quot;udp-header-diagram&quot;] .bg-hatch { stroke: #8c959f; }
+[id=&quot;udp-header-diagram&quot;] .bg-variable-cell { stroke: none; }
+[id=&quot;udp-header-diagram&quot;] .bg-bit-numbers text, [id=&quot;udp-header-diagram&quot;] .bg-offset { fill: #57606a; }
+[id=&quot;udp-header-diagram&quot;] [data-field-id=&quot;source-port&quot;] .bg-cell { fill: #ffffff; }
+[id=&quot;udp-header-diagram&quot;] [data-field-id=&quot;destination-port&quot;] .bg-cell { fill: #ffffff; }
+[id=&quot;udp-header-diagram&quot;] [data-field-id=&quot;length&quot;] .bg-cell { fill: #ffffff; }
+[id=&quot;udp-header-diagram&quot;] [data-field-id=&quot;checksum&quot;] .bg-cell { fill: #ffffff; }
+[id=&quot;udp-header-diagram&quot;] [data-field-id=&quot;data&quot;] .bg-cell { fill: #ffffff; }</style>
+<text class="bg-title" font-size="15.6" text-anchor="middle" x="336" y="34.2">UDP Header</text>
+<g class="bg-bit-numbers">
+<text class="bg-bit-number" font-size="11" text-anchor="middle" x="26" fill="#57606a" y="60">0</text>
+<text class="bg-bit-number" font-size="11" text-anchor="middle" x="46" fill="#57606a" y="60">1</text>
+<text class="bg-bit-number" font-size="11" text-anchor="middle" x="66" fill="#57606a" y="60">2</text>
+<text class="bg-bit-number" font-size="11" text-anchor="middle" x="86" fill="#57606a" y="60">3</text>
+<text class="bg-bit-number" font-size="11" text-anchor="middle" x="106" fill="#57606a" y="60">4</text>
+<text class="bg-bit-number" font-size="11" text-anchor="middle" x="126" fill="#57606a" y="60">5</text>
+<text class="bg-bit-number" font-size="11" text-anchor="middle" x="146" fill="#57606a" y="60">6</text>
+<text class="bg-bit-number" font-size="11" text-anchor="middle" x="166" fill="#57606a" y="60">7</text>
+<text class="bg-bit-number" font-size="11" text-anchor="middle" x="186" fill="#57606a" y="60">8</text>
+<text class="bg-bit-number" font-size="11" text-anchor="middle" x="206" fill="#57606a" y="60">9</text>
+<text class="bg-bit-number" font-size="11" text-anchor="middle" x="226" fill="#57606a" y="60">10</text>
+<text class="bg-bit-number" font-size="11" text-anchor="middle" x="246" fill="#57606a" y="60">11</text>
+<text class="bg-bit-number" font-size="11" text-anchor="middle" x="266" fill="#57606a" y="60">12</text>
+<text class="bg-bit-number" font-size="11" text-anchor="middle" x="286" fill="#57606a" y="60">13</text>
+<text class="bg-bit-number" font-size="11" text-anchor="middle" x="306" fill="#57606a" y="60">14</text>
+<text class="bg-bit-number" font-size="11" text-anchor="middle" x="326" fill="#57606a" y="60">15</text>
+<text class="bg-bit-number" font-size="11" text-anchor="middle" x="346" fill="#57606a" y="60">16</text>
+<text class="bg-bit-number" font-size="11" text-anchor="middle" x="366" fill="#57606a" y="60">17</text>
+<text class="bg-bit-number" font-size="11" text-anchor="middle" x="386" fill="#57606a" y="60">18</text>
+<text class="bg-bit-number" font-size="11" text-anchor="middle" x="406" fill="#57606a" y="60">19</text>
+<text class="bg-bit-number" font-size="11" text-anchor="middle" x="426" fill="#57606a" y="60">20</text>
+<text class="bg-bit-number" font-size="11" text-anchor="middle" x="446" fill="#57606a" y="60">21</text>
+<text class="bg-bit-number" font-size="11" text-anchor="middle" x="466" fill="#57606a" y="60">22</text>
+<text class="bg-bit-number" font-size="11" text-anchor="middle" x="486" fill="#57606a" y="60">23</text>
+<text class="bg-bit-number" font-size="11" text-anchor="middle" x="506" fill="#57606a" y="60">24</text>
+<text class="bg-bit-number" font-size="11" text-anchor="middle" x="526" fill="#57606a" y="60">25</text>
+<text class="bg-bit-number" font-size="11" text-anchor="middle" x="546" fill="#57606a" y="60">26</text>
+<text class="bg-bit-number" font-size="11" text-anchor="middle" x="566" fill="#57606a" y="60">27</text>
+<text class="bg-bit-number" font-size="11" text-anchor="middle" x="586" fill="#57606a" y="60">28</text>
+<text class="bg-bit-number" font-size="11" text-anchor="middle" x="606" fill="#57606a" y="60">29</text>
+<text class="bg-bit-number" font-size="11" text-anchor="middle" x="626" fill="#57606a" y="60">30</text>
+<text class="bg-bit-number" font-size="11" text-anchor="middle" x="646" fill="#57606a" y="60">31</text>
+</g>
+<g class="bg-rows">
+<g class="bg-row" data-row="0" data-offset="0">
+<g class="bg-field" data-field-id="source-port" data-bits="16" data-part="whole">
+<title>Source Port (16 bits)</title>
+<rect class="bg-cell" x="16" y="68" width="320" height="36" fill="#ffffff" stroke="#1f2328" stroke-width="1"/>
+<text class="bg-label" font-size="13" text-anchor="middle" x="176" y="90.55">Source Port</text>
+</g>
+<g class="bg-field" data-field-id="destination-port" data-bits="16" data-part="whole">
+<title>Destination Port (16 bits)</title>
+<rect class="bg-cell" x="336" y="68" width="320" height="36" fill="#ffffff" stroke="#1f2328" stroke-width="1"/>
+<text class="bg-label" font-size="13" text-anchor="middle" x="496" y="90.55">Destination Port</text>
+</g>
+<line class="bg-tick" x1="36" y1="68" x2="36" y2="72" stroke="#1f2328"/>
+<line class="bg-tick" x1="56" y1="68" x2="56" y2="72" stroke="#1f2328"/>
+<line class="bg-tick" x1="76" y1="68" x2="76" y2="72" stroke="#1f2328"/>
+<line class="bg-tick" x1="96" y1="68" x2="96" y2="72" stroke="#1f2328"/>
+<line class="bg-tick" x1="116" y1="68" x2="116" y2="72" stroke="#1f2328"/>
+<line class="bg-tick" x1="136" y1="68" x2="136" y2="72" stroke="#1f2328"/>
+<line class="bg-tick" x1="156" y1="68" x2="156" y2="72" stroke="#1f2328"/>
+<line class="bg-tick" x1="176" y1="68" x2="176" y2="72" stroke="#1f2328"/>
+<line class="bg-tick" x1="196" y1="68" x2="196" y2="72" stroke="#1f2328"/>
+<line class="bg-tick" x1="216" y1="68" x2="216" y2="72" stroke="#1f2328"/>
+<line class="bg-tick" x1="236" y1="68" x2="236" y2="72" stroke="#1f2328"/>
+<line class="bg-tick" x1="256" y1="68" x2="256" y2="72" stroke="#1f2328"/>
+<line class="bg-tick" x1="276" y1="68" x2="276" y2="72" stroke="#1f2328"/>
+<line class="bg-tick" x1="296" y1="68" x2="296" y2="72" stroke="#1f2328"/>
+<line class="bg-tick" x1="316" y1="68" x2="316" y2="72" stroke="#1f2328"/>
+<line class="bg-tick" x1="336" y1="68" x2="336" y2="72" stroke="#1f2328"/>
+<line class="bg-tick" x1="356" y1="68" x2="356" y2="72" stroke="#1f2328"/>
+<line class="bg-tick" x1="376" y1="68" x2="376" y2="72" stroke="#1f2328"/>
+<line class="bg-tick" x1="396" y1="68" x2="396" y2="72" stroke="#1f2328"/>
+<line class="bg-tick" x1="416" y1="68" x2="416" y2="72" stroke="#1f2328"/>
+<line class="bg-tick" x1="436" y1="68" x2="436" y2="72" stroke="#1f2328"/>
+<line class="bg-tick" x1="456" y1="68" x2="456" y2="72" stroke="#1f2328"/>
+<line class="bg-tick" x1="476" y1="68" x2="476" y2="72" stroke="#1f2328"/>
+<line class="bg-tick" x1="496" y1="68" x2="496" y2="72" stroke="#1f2328"/>
+<line class="bg-tick" x1="516" y1="68" x2="516" y2="72" stroke="#1f2328"/>
+<line class="bg-tick" x1="536" y1="68" x2="536" y2="72" stroke="#1f2328"/>
+<line class="bg-tick" x1="556" y1="68" x2="556" y2="72" stroke="#1f2328"/>
+<line class="bg-tick" x1="576" y1="68" x2="576" y2="72" stroke="#1f2328"/>
+<line class="bg-tick" x1="596" y1="68" x2="596" y2="72" stroke="#1f2328"/>
+<line class="bg-tick" x1="616" y1="68" x2="616" y2="72" stroke="#1f2328"/>
+<line class="bg-tick" x1="636" y1="68" x2="636" y2="72" stroke="#1f2328"/>
+</g>
+<g class="bg-row" data-row="1" data-offset="4">
+<g class="bg-field" data-field-id="length" data-bits="16" data-part="whole">
+<title>Length (16 bits)</title>
+<rect class="bg-cell" x="16" y="104" width="320" height="36" fill="#ffffff" stroke="#1f2328" stroke-width="1"/>
+<text class="bg-label" font-size="13" text-anchor="middle" x="176" y="126.55">Length</text>
+</g>
+<g class="bg-field" data-field-id="checksum" data-bits="16" data-part="whole">
+<title>Checksum (16 bits)</title>
+<rect class="bg-cell" x="336" y="104" width="320" height="36" fill="#ffffff" stroke="#1f2328" stroke-width="1"/>
+<text class="bg-label" font-size="13" text-anchor="middle" x="496" y="126.55">Checksum</text>
+</g>
+<line class="bg-tick" x1="36" y1="104" x2="36" y2="108" stroke="#1f2328"/>
+<line class="bg-tick" x1="56" y1="104" x2="56" y2="108" stroke="#1f2328"/>
+<line class="bg-tick" x1="76" y1="104" x2="76" y2="108" stroke="#1f2328"/>
+<line class="bg-tick" x1="96" y1="104" x2="96" y2="108" stroke="#1f2328"/>
+<line class="bg-tick" x1="116" y1="104" x2="116" y2="108" stroke="#1f2328"/>
+<line class="bg-tick" x1="136" y1="104" x2="136" y2="108" stroke="#1f2328"/>
+<line class="bg-tick" x1="156" y1="104" x2="156" y2="108" stroke="#1f2328"/>
+<line class="bg-tick" x1="176" y1="104" x2="176" y2="108" stroke="#1f2328"/>
+<line class="bg-tick" x1="196" y1="104" x2="196" y2="108" stroke="#1f2328"/>
+<line class="bg-tick" x1="216" y1="104" x2="216" y2="108" stroke="#1f2328"/>
+<line class="bg-tick" x1="236" y1="104" x2="236" y2="108" stroke="#1f2328"/>
+<line class="bg-tick" x1="256" y1="104" x2="256" y2="108" stroke="#1f2328"/>
+<line class="bg-tick" x1="276" y1="104" x2="276" y2="108" stroke="#1f2328"/>
+<line class="bg-tick" x1="296" y1="104" x2="296" y2="108" stroke="#1f2328"/>
+<line class="bg-tick" x1="316" y1="104" x2="316" y2="108" stroke="#1f2328"/>
+<line class="bg-tick" x1="336" y1="104" x2="336" y2="108" stroke="#1f2328"/>
+<line class="bg-tick" x1="356" y1="104" x2="356" y2="108" stroke="#1f2328"/>
+<line class="bg-tick" x1="376" y1="104" x2="376" y2="108" stroke="#1f2328"/>
+<line class="bg-tick" x1="396" y1="104" x2="396" y2="108" stroke="#1f2328"/>
+<line class="bg-tick" x1="416" y1="104" x2="416" y2="108" stroke="#1f2328"/>
+<line class="bg-tick" x1="436" y1="104" x2="436" y2="108" stroke="#1f2328"/>
+<line class="bg-tick" x1="456" y1="104" x2="456" y2="108" stroke="#1f2328"/>
+<line class="bg-tick" x1="476" y1="104" x2="476" y2="108" stroke="#1f2328"/>
+<line class="bg-tick" x1="496" y1="104" x2="496" y2="108" stroke="#1f2328"/>
+<line class="bg-tick" x1="516" y1="104" x2="516" y2="108" stroke="#1f2328"/>
+<line class="bg-tick" x1="536" y1="104" x2="536" y2="108" stroke="#1f2328"/>
+<line class="bg-tick" x1="556" y1="104" x2="556" y2="108" stroke="#1f2328"/>
+<line class="bg-tick" x1="576" y1="104" x2="576" y2="108" stroke="#1f2328"/>
+<line class="bg-tick" x1="596" y1="104" x2="596" y2="108" stroke="#1f2328"/>
+<line class="bg-tick" x1="616" y1="104" x2="616" y2="108" stroke="#1f2328"/>
+<line class="bg-tick" x1="636" y1="104" x2="636" y2="108" stroke="#1f2328"/>
+</g>
+<g class="bg-row" data-row="2" data-offset="8">
+<g class="bg-field" data-field-id="data" data-bits="variable" data-part="whole">
+<title>Data (variable bits)</title>
+<rect class="bg-cell bg-variable-cell" x="16" y="140" width="640" height="54" fill="#ffffff" stroke="none" stroke-width="1"/>
+<line class="bg-edge" x1="16" y1="140" x2="656" y2="140" stroke="#1f2328"/>
+<line class="bg-edge" x1="16" y1="194" x2="656" y2="194" stroke="#1f2328"/>
+<path class="bg-edge" d="M 16 140 L 18 149 L 14 158 L 18 167 L 14 176 L 18 185 L 16 194" fill="none" stroke="#1f2328"/>
+<path class="bg-edge" d="M 656 140 L 658 149 L 654 158 L 658 167 L 654 176 L 658 185 L 656 194" fill="none" stroke="#1f2328"/>
+<text class="bg-label" font-size="13" text-anchor="middle" x="336" y="171.55">Data</text>
+</g>
+<line class="bg-tick" x1="36" y1="140" x2="36" y2="144" stroke="#1f2328"/>
+<line class="bg-tick" x1="56" y1="140" x2="56" y2="144" stroke="#1f2328"/>
+<line class="bg-tick" x1="76" y1="140" x2="76" y2="144" stroke="#1f2328"/>
+<line class="bg-tick" x1="96" y1="140" x2="96" y2="144" stroke="#1f2328"/>
+<line class="bg-tick" x1="116" y1="140" x2="116" y2="144" stroke="#1f2328"/>
+<line class="bg-tick" x1="136" y1="140" x2="136" y2="144" stroke="#1f2328"/>
+<line class="bg-tick" x1="156" y1="140" x2="156" y2="144" stroke="#1f2328"/>
+<line class="bg-tick" x1="176" y1="140" x2="176" y2="144" stroke="#1f2328"/>
+<line class="bg-tick" x1="196" y1="140" x2="196" y2="144" stroke="#1f2328"/>
+<line class="bg-tick" x1="216" y1="140" x2="216" y2="144" stroke="#1f2328"/>
+<line class="bg-tick" x1="236" y1="140" x2="236" y2="144" stroke="#1f2328"/>
+<line class="bg-tick" x1="256" y1="140" x2="256" y2="144" stroke="#1f2328"/>
+<line class="bg-tick" x1="276" y1="140" x2="276" y2="144" stroke="#1f2328"/>
+<line class="bg-tick" x1="296" y1="140" x2="296" y2="144" stroke="#1f2328"/>
+<line class="bg-tick" x1="316" y1="140" x2="316" y2="144" stroke="#1f2328"/>
+<line class="bg-tick" x1="336" y1="140" x2="336" y2="144" stroke="#1f2328"/>
+<line class="bg-tick" x1="356" y1="140" x2="356" y2="144" stroke="#1f2328"/>
+<line class="bg-tick" x1="376" y1="140" x2="376" y2="144" stroke="#1f2328"/>
+<line class="bg-tick" x1="396" y1="140" x2="396" y2="144" stroke="#1f2328"/>
+<line class="bg-tick" x1="416" y1="140" x2="416" y2="144" stroke="#1f2328"/>
+<line class="bg-tick" x1="436" y1="140" x2="436" y2="144" stroke="#1f2328"/>
+<line class="bg-tick" x1="456" y1="140" x2="456" y2="144" stroke="#1f2328"/>
+<line class="bg-tick" x1="476" y1="140" x2="476" y2="144" stroke="#1f2328"/>
+<line class="bg-tick" x1="496" y1="140" x2="496" y2="144" stroke="#1f2328"/>
+<line class="bg-tick" x1="516" y1="140" x2="516" y2="144" stroke="#1f2328"/>
+<line class="bg-tick" x1="536" y1="140" x2="536" y2="144" stroke="#1f2328"/>
+<line class="bg-tick" x1="556" y1="140" x2="556" y2="144" stroke="#1f2328"/>
+<line class="bg-tick" x1="576" y1="140" x2="576" y2="144" stroke="#1f2328"/>
+<line class="bg-tick" x1="596" y1="140" x2="596" y2="144" stroke="#1f2328"/>
+<line class="bg-tick" x1="616" y1="140" x2="616" y2="144" stroke="#1f2328"/>
+<line class="bg-tick" x1="636" y1="140" x2="636" y2="144" stroke="#1f2328"/>
+</g>
+</g>
+</svg>

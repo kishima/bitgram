@@ -1,0 +1,9 @@
+unknown_key.yml: {code: V-02, path: "$.fields[0].bitz"}
+bits_and_bytes.yml: {code: V-04, path: "$.fields[0]"}
+duplicate_id.yml: {code: V-05, path: "$.fields[1].id", schema: skip}
+variable_mid_row.yml: {code: V-06, path: "$.fields[1]", schema: skip}
+partial_row.yml: {code: V-08, path: "$.fields"}
+alias_bomb.yml: {code: PARSE, path: "$", schema: skip}
+ruby_object.yml: {code: PARSE, path: "$", schema: skip}
+unsafe_color.yml: {code: V-03, path: "$.fields[0].fill"}
+empty.yml: {code: V-03, path: "$"}

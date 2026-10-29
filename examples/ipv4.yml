@@ -1,0 +1,20 @@
+version: 1
+title: IPv4 Header
+description: RFC 791, with DSCP and ECN from RFC 2474 and RFC 3168
+fields:
+  - { name: Version, bits: 4 }
+  - { name: IHL, bits: 4 }
+  - { name: DSCP, bits: 6 }
+  - { name: ECN, bits: 2 }
+  - { name: Total Length, bits: 16 }
+  - { name: Identification, bits: 16 }
+  - { name: Flags, bits: 3 }
+  - { name: Fragment Offset, bits: 13 }
+  - { name: Time to Live, bits: 8 }
+  - { name: Protocol, bits: 8 }
+  - { name: Header Checksum, bits: 16 }
+  - { name: Source Address, bits: 32 }
+  - { name: Destination Address, bits: 32 }
+  - { name: Options, bits: variable, display_bits: 24 }
+  - { name: Padding, bits: variable, display_bits: 8 }
+  - { name: Data, bits: variable }

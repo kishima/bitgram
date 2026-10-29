@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "title": "UDP Header",
+  "description": "RFC 768",
+  "fields": [
+    {
+      "name": "Source Port",
+      "bits": 16
+    },
+    {
+      "name": "Destination Port",
+      "bits": 16
+    },
+    {
+      "name": "Length",
+      "bits": 16
+    },
+    {
+      "name": "Checksum",
+      "bits": 16
+    },
+    {
+      "name": "Data",
+      "bits": "variable"
+    }
+  ]
+}

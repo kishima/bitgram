@@ -1,0 +1,3 @@
+version: 1
+fields: &fields []
+notes: *fields

@@ -16,8 +16,9 @@ require_relative "bitgram/diagram"
 module Bitgram
   autoload :CLI, "bitgram/cli"
   # Load a YAML/JSON string or Ruby Hash and apply nested configuration overrides.
+  # @param config [String, Hash, nil] shared settings file (or Hash) applied beneath the definition
   # @return [Diagram]
-  def self.load(input = nil, format: nil, **overrides)
+  def self.load(input = nil, format: nil, config: nil, **overrides)
     if input.nil?
       input = overrides
       overrides = {}
@@ -28,21 +29,21 @@ module Bitgram
              else
                Loader.new.load_string(input, format: format)
              end
-    build(source, overrides)
+    build(source, overrides, config)
   end
 
   # Load a definition from disk.
+  # @param config [String, Hash, nil] shared settings file (or Hash) applied beneath the definition
   # @return [Diagram]
-  def self.load_file(path, format: nil, **overrides)
-    build(Loader.new.load_file(path, format: format), overrides)
+  def self.load_file(path, format: nil, config: nil, **overrides)
+    build(Loader.new.load_file(path, format: format), overrides, config)
   end
 
   # Validate a file without raising definition or parse exceptions.
   # @return [Array<Issue>]
-  def self.validate_file(path, format: nil, **overrides)
+  def self.validate_file(path, format: nil, config: nil, **overrides)
     source = Loader.new.load_file(path, format: format)
-    data = source.data.is_a?(Hash) ? Config.deep_merge(source.data, Config.stringify(overrides)) : source.data
-    Validator.new(line_map: source.line_map).call(data)
+    Validator.new(line_map: source.line_map).call(compose(source.data, overrides, config))
   rescue ParseError => e
     [Issue.new(:error, "PARSE", "$", nil, e.message)]
   end
@@ -71,8 +72,19 @@ module Bitgram
   end
 
   # @api private
-  def self.build(source, overrides)
-    data = source.data.is_a?(Hash) ? Config.deep_merge(source.data, Config.stringify(overrides)) : source.data
+  # Settings layer from lowest to highest: built-in defaults (Normalizer), the shared config,
+  # the definition, then overrides (dedicated CLI options, --set, API keywords).
+  def self.compose(data, overrides, config)
+    return data unless data.is_a?(Hash)
+
+    data = Config.deep_merge(Config.read_shared(config), data) if config
+    Config.deep_merge(data, Config.stringify(overrides))
+  end
+  private_class_method :compose
+
+  # @api private
+  def self.build(source, overrides, config = nil)
+    data = compose(source.data, overrides, config)
     issues = Validator.new(line_map: source.line_map).call(data)
     raise ValidationError, issues if issues.any? { |issue| issue.severity == :error }
 

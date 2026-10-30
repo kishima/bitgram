@@ -31,6 +31,36 @@ module Bitgram
       "raster" => { "scale" => 2, "quality" => 90, "rasterizer" => "auto", "timeout" => 30 }
     }.then { |defaults| deep_freeze(defaults) }
 
+    SHARED_SECTIONS = %w[layout ascii svg raster].freeze
+
+    # Read a shared settings file (or Hash) holding only configuration sections, such as
+    # the fonts and colors common to every diagram in a book. Values are validated against
+    # the definition schema and reported with the settings file's own line numbers.
+    def read_shared(config)
+      source = config.is_a?(Hash) ? Loader::Source.new(stringify(config), {}, nil) : Loader.new.load_file(config.to_s)
+      name = source.filename || "<config>"
+      data = source.data
+      raise ParseError, "#{name}: config must be an object" unless data.is_a?(Hash)
+
+      unknown = data.keys - SHARED_SECTIONS
+      unless unknown.empty?
+        raise ParseError, "#{name}: config may contain only #{SHARED_SECTIONS.join(', ')} (found #{unknown.join(', ')})"
+      end
+
+      check_shared(data, source.line_map, name)
+      data
+    end
+
+    def check_shared(data, line_map, name)
+      probe = { "version" => 1, "fields" => [{ "name" => "probe", "bits" => 1 }] }.merge(data)
+      errors = Validator.new(line_map: line_map).call(probe).select { |issue| issue.severity == :error }
+      return if errors.empty?
+
+      raise ParseError, errors.map { |issue|
+        "#{[name, issue.line].compact.join(':')}: #{issue.code} #{issue.path}: #{issue.message}"
+      }.join("\n")
+    end
+
     def deep_merge(base, extra)
       base.merge(extra) do |_key, old, new|
         old.is_a?(Hash) && new.is_a?(Hash) ? deep_merge(old, new) : new

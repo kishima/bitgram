@@ -27,8 +27,9 @@ module Bitgram
 
         def theme_css(theme)
           selector = %([id="#{@prefix}-diagram"])
+          font_family = FontFamily.css(@options["font_family"])
           rules = ["#{selector} { background: #{theme['background']}; }",
-                   "#{selector} text { font-family: #{@options['font_family']}; fill: #{theme['text']}; }",
+                   "#{selector} text { font-family: #{font_family}; fill: #{theme['text']}; }",
                    "#{selector} .bg-cell, #{selector} .bg-edge, #{selector} .bg-tick " \
                    "{ stroke: #{theme['stroke']}; stroke-width: 1; }",
                    "#{selector} .bg-hatch { stroke: #{theme['hatch']}; }",

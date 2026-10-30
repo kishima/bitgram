@@ -16,6 +16,9 @@ module Bitgram
         parser.on("--input-format FORMAT", %w[yaml json], "Input format") do |value|
           options[:input_format] = value.to_sym
         end
+        parser.on("--config PATH", "Shared settings applied beneath the definition") do |value|
+          options[:config] = value
+        end
         render_options(parser, options) if command == "render"
       end
     end

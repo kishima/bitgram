@@ -96,7 +96,7 @@ Each bit occupies two columns. Labels use Unicode display width, including CJK t
 | `bit_width` | Positive number, pixels per bit | `20` |
 | `row_height` | Positive number, base row height | `36` |
 | `margin` | Nonnegative number, outer pixels | `16` |
-| `font_family` | Font stack string | `Helvetica, Arial, 'Noto Sans CJK JP', sans-serif` |
+| `font_family` | Font stack string; names that CSS cannot take unquoted (such as `M PLUS 1p`) are quoted on output | `Helvetica, Arial, 'Noto Sans CJK JP', sans-serif` |
 | `font_size` | Positive number, pixels | `13` |
 | `min_font_size` | Positive number, shrink limit | `9` |
 | `char_width_ratio` | Positive number, half-width character size relative to font size | `0.6` |
@@ -113,6 +113,8 @@ Themes define `background`, `stroke`, `text`, `header_text`, `cell_fill`, `reser
 
 Colors accept hex, color names, `rgb()`, and `rgba()`. Font names must not contain CSS/XML delimiters (`;`, braces, angle brackets, or backslashes). External resources and CSS URLs are not allowed.
 
+`font_family` is a comma-separated list. A family name is written to CSS as given when it is already quoted, is a generic family (`sans-serif`, `monospace`, ...), or consists only of CSS identifiers (`Noto Sans`). Any other name is wrapped in single quotes, so `font_family: M PLUS 1p` works without writing `"'M PLUS 1p'"`; a word beginning with a digit (`1p`) is not an identifier and would otherwise make the whole declaration invalid.
+
 ## Label fitting
 
 ASCII tries `single`, `wrap`, `short`, `vertical`, `footnote`, then `truncate`. SVG tries `shrink` after `single`. A custom `fit_order` changes this order. Wrapping respects words and permits breaks between CJK characters; narrow fields can stack characters vertically. Shrinking uses 0.5-pixel steps. Footnotes are numbered in row order, using `description` or the full field name. Truncation produces warning `V-09`.
@@ -128,6 +130,19 @@ ASCII tries `single`, `wrap`, `short`, `vertical`, `footnote`, then `truncate`. 
 | `timeout` | Positive number, seconds | `30` |
 
 Automatic selection chooses the first available backend supporting the requested format: vips, rsvg (PNG only), then ImageMagick. Output is limited to 50 million pixels; lower `scale` for large diagrams. Native converters and CJK fonts must be installed separately.
+
+## Shared settings file
+
+Settings common to many diagrams (fonts, sizes, theme) can live in one file that holds only the `layout`, `ascii`, `svg`, and `raster` sections, passed with `--config PATH` or the `config:` keyword of the Ruby API:
+
+```yaml
+# book.yml
+svg:
+  font_family: M PLUS 1p
+  theme: mono
+```
+
+Settings are combined in this order, later ones winning: built-in defaults, the shared settings file, the definition, dedicated command-line options, then `--set`. The file is validated with the same schema as a definition's sections, and errors carry the file's own line numbers. Any other top-level key, such as `fields`, is an error. A theme path inside the file is resolved like any other theme path, from the current directory.
 
 ## Diagnostics and limits
 

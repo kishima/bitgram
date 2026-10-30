@@ -103,7 +103,9 @@ module Bitgram
       output_format(options)
       @input_name = preset ? "preset:#{preset}" : args.first
       overrides = Config.deep_merge(options[:overrides], options[:settings])
-      preset ? Bitgram.preset(preset, **overrides) : read_diagram(args.first, options, overrides)
+      return Bitgram.preset(preset, config: options[:config], **overrides) if preset
+
+      read_diagram(args.first, options, overrides)
     end
 
     def output_format(options)
@@ -128,10 +130,11 @@ module Bitgram
 
     def read_diagram(path, options, overrides = {})
       if path == "-"
-        return Bitgram.load(@stdin.read(Loader::MAX_BYTES + 1), format: options[:input_format], **overrides)
+        input = @stdin.read(Loader::MAX_BYTES + 1)
+        return Bitgram.load(input, format: options[:input_format], config: options[:config], **overrides)
       end
 
-      Bitgram.load_file(path, format: options[:input_format], **overrides)
+      Bitgram.load_file(path, format: options[:input_format], config: options[:config], **overrides)
     end
 
     def validate(args, options)
@@ -141,7 +144,7 @@ module Bitgram
         issues = if path == "-"
                    read_diagram(path, options).issues
                  else
-                   Bitgram.validate_file(path, format: options[:input_format])
+                   Bitgram.validate_file(path, format: options[:input_format], config: options[:config])
                  end
         report_issues(issues, path)
         issues.any? { |issue| issue.severity == :error || options[:strict] } ? 1 : 0

@@ -9,7 +9,7 @@ diagram = Bitgram.load({ version: 1, fields: [{ name: "A", bytes: 4 }] })
 diagram = Bitgram.preset(:tcp)
 ```
 
-`Bitgram.load` accepts a YAML/JSON string or a Ruby Hash. `load_file` reads UTF-8 files, and `preset` loads a bundled protocol. Nested override hashes passed to the loading APIs are merged into the definition and validated.
+`Bitgram.load` accepts a YAML/JSON string or a Ruby Hash. `load_file` reads UTF-8 files, and `preset` loads a bundled protocol. Nested override hashes passed to the loading APIs are merged into the definition and validated. The `config:` keyword (a path or a Hash holding only `layout`, `ascii`, `svg`, and `raster`) supplies shared settings beneath the definition, as `--config` does: `Bitgram.load_file("figure.yml", config: "book.yml")`.
 
 ```ruby
 diagram = Bitgram.preset(:udp, layout: { offsets: "hex" })

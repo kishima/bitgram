@@ -5,6 +5,7 @@ require "json"
 require_relative "../text/fitter"
 require_relative "svg/xml_builder"
 require_relative "svg/theme"
+require_relative "svg/font_family"
 require_relative "svg/geometry"
 require_relative "svg/decorations"
 require_relative "svg/cells"
@@ -119,7 +120,7 @@ module Bitgram
       def text_attributes(klass, size = @options["font_size"])
         attributes = { class: klass, "font-size": size, "text-anchor": "middle" }
         if @options["inline_styles"]
-          attributes[:"font-family"] = @options["font_family"]
+          attributes[:"font-family"] = FontFamily.css(@options["font_family"])
           attributes[:fill] = @theme["text"]
         end
         attributes

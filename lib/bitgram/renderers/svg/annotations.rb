@@ -91,7 +91,7 @@ module Bitgram
             emit("rect", { class: "bg-annotation-cell", x: x, y: y, width: width, height: height,
                            fill: annotation.fill || @theme["cell_fill"], stroke: @theme["stroke"], "stroke-width": 1 })
           end
-          draw_label([fit], x + (width / 2.0), y + (height / 2.0))
+          draw_label([fit], x + (width / 2.0), y + (height / 2.0), names: false)
         end
       end
     end

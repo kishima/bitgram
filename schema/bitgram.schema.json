@@ -383,6 +383,13 @@
         "ligatures": {
           "type": "boolean"
         },
+        "field_font_weight": {
+          "type": "string",
+          "enum": [
+            "normal",
+            "bold"
+          ]
+        },
         "leader_gap": {
           "type": "number",
           "minimum": 0,

@@ -170,13 +170,15 @@ module Bitgram
           top = bottom + leader_gap + (label.level * label.size * 1.2)
           emit("line", { class: "bg-leader", x1: @geometry.x + label.line_x, y1: bottom,
                          x2: @geometry.x + label.line_x, y2: top, stroke: @theme["stroke"], "stroke-width": 1 })
-          emit("text", text_attributes("bg-label bg-leader-label", label.size)
+          emit("text", text_attributes("bg-label bg-leader-label", label.size, bold: field_bold?)
                          .merge(x: @geometry.x + label.center, y: top + (label.size * 0.95)), label.text)
         end
       end
 
-      def text_attributes(klass, size = @options["font_size"])
+      def text_attributes(klass, size = @options["font_size"], bold: false)
         attributes = { class: klass, "font-size": size, "text-anchor": "middle" }
+        # A presentation attribute, so it holds with and without inline_styles.
+        attributes[:"font-weight"] = "bold" if bold
         if @options["inline_styles"]
           attributes[:"font-family"] = FontFamily.css(@options["font_family"])
           attributes[:fill] = @theme["text"]

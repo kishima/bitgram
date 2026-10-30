@@ -115,4 +115,29 @@ RSpec.describe "SVG names of narrow fields" do
     expect(REXML::XPath.match(inline, "//text").map { |text| text.attributes["style"] })
       .to all(eq("font-variant-ligatures: none"))
   end
+
+  it "sets field names in bold with svg.field_font_weight: bold, but not values or annotations" do
+    expect(header(%w[single shrink leader truncate]).to_svg).not_to include("font-weight")
+    diagram = header(%w[single shrink leader truncate], field_font_weight: "bold")
+    svg = root(diagram)
+    bold = REXML::XPath.match(svg, "//text[@font-weight='bold']").map(&:text)
+    expect(bold).to contain_exactly("flags", "gc_color", "tt", "frozen")
+    expect(REXML::XPath.first(svg, "//text[contains(@class, 'bg-leader-label')]").attributes["font-weight"])
+      .to eq("bold")
+    rotated = root(header(%w[single rotate truncate], field_font_weight: "bold"))
+    expect(REXML::XPath.first(rotated, "//text[@transform]").attributes["font-weight"]).to eq("bold")
+    inline = root(diagram, inline_styles: true)
+    expect(REXML::XPath.match(inline, "//text[@font-weight='bold']").size).to eq(4)
+    annotated = Bitgram.load({ version: 1, layout: { row_bits: 8 }, svg: { field_font_weight: "bold" },
+                               annotations: [{ label: "v", values: { a: "1" } }],
+                               fields: [{ name: "a", bits: 4, value: 3 }, { name: "b", bits: 4 }] })
+    texts = REXML::XPath.match(root(annotated), "//text[@class='bg-label' or @class='bg-value']")
+    expect(texts.to_h { |text| [text.text, text.attributes["font-weight"]] })
+      .to eq("a" => "bold", "= 3" => nil, "b" => "bold", "1" => nil)
+  end
+
+  it "rejects a field_font_weight other than normal or bold" do
+    expect { header(%w[single], field_font_weight: "heavy").to_svg }
+      .to raise_error(Bitgram::ValidationError, /field_font_weight/)
+  end
 end

@@ -157,6 +157,7 @@ Each bit occupies two columns. Labels use Unicode display width, including CJK t
 | `id_prefix` | Prefix for all SVG IDs | Title slug or definition digest |
 | `fit_order` | Array of fitting strategies | See below |
 | `ligatures` | Boolean; `false` writes `font-variant-ligatures: none`, so that `fl` or `fi` in a name stays two letters | `true` (the font decides) |
+| `field_font_weight` | `normal`, `bold`; `bold` sets field names (in the cell, turned, or hung below by `leader`) in bold. Values and annotation rows keep the normal weight | `normal` |
 | `leader_gap` | Nonnegative number; pixels between a row and the first line of names hung below it by the `leader` strategy | `8` (the space left above footnotes) |
 
 SVG includes accessible title and description elements, field IDs, and tooltips. For repeated identical diagrams embedded in one HTML page, provide a distinct `id_prefix` for each copy. Output IDs and numeric formatting are deterministic. Raster conversion always uses inline attributes; the `auto` theme uses the default light palette during conversion.

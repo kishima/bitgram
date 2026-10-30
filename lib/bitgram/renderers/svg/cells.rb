@@ -61,7 +61,9 @@ module Bitgram
           end
         end
 
-        def draw_label(fits, x, center)
+        # names: false for text that is not a field's name (annotation rows), which
+        # svg.field_font_weight leaves alone.
+        def draw_label(fits, x, center, names: true)
           scales = fits.each_index.map { |index| index.zero? ? 1 : 0.85 }
           total = fits.each_with_index.sum { |fit, index| fit ? @geometry.fit_height(fit, scales[index]) : 0 }
           top = center - (total / 2.0)
@@ -69,33 +71,43 @@ module Bitgram
             next unless fit
 
             size = (fit.font_size || @options["font_size"]) * scales[index]
-            klass = index.zero? ? "bg-label" : "bg-value"
+            style = label_style(index.zero?, size, names)
             extent = @geometry.fit_height(fit, scales[index])
             case fit.strategy
             when :leader then nil # Drawn below the row (Svg#draw_leaders).
-            when :rotate then draw_rotated(fit.lines.first, x, top + (extent / 2.0), size, klass)
-            else draw_label_lines(fit.lines, x, top + (size * 0.95), size, klass)
+            when :rotate then draw_rotated(fit.lines.first, x, top + (extent / 2.0), size, style)
+            else draw_label_lines(fit.lines, x, top + (size * 0.95), size, style)
             end
             top += extent
           end
         end
 
+        # The first text of a cell is its name (bg-label), the second its value (bg-value).
+        def label_style(name, size, names)
+          text_attributes(name ? "bg-label" : "bg-value", size, bold: names && name && field_bold?)
+        end
+
         # Reads from bottom to top. The baseline sits 0.35em from the middle, as for offsets.
-        def draw_rotated(text, x, middle, size, klass)
+        def draw_rotated(text, x, middle, size, style)
           baseline = x + (size * 0.35)
-          attributes = text_attributes(klass, size).merge(x: baseline, y: middle,
-                                                          transform: "rotate(-90 #{fmt(baseline)} #{fmt(middle)})")
+          attributes = style.merge(x: baseline, y: middle, transform: "rotate(-90 #{fmt(baseline)} #{fmt(middle)})")
           emit("text", attributes, text)
         end
 
-        def draw_label_lines(lines, x, baseline, size, klass)
+        def draw_label_lines(lines, x, baseline, size, style)
           if lines.length == 1
-            emit("text", text_attributes(klass, size).merge(x: x, y: baseline), lines.first)
+            emit("text", style.merge(x: x, y: baseline), lines.first)
           else
-            @output << "<text #{XmlBuilder.attributes(text_attributes(klass, size))}>"
+            @output << "<text #{XmlBuilder.attributes(style)}>"
             lines.each_with_index { |line, index| emit("tspan", { x: x, y: baseline + (index * size * 1.2) }, line) }
             @output << "</text>"
           end
+        end
+
+        # svg.field_font_weight: bold sets the names of fields in bold (the book's draw.io
+        # figures do). Unset or normal writes nothing, as before.
+        def field_bold?
+          @options["field_font_weight"] == "bold"
         end
       end
     end

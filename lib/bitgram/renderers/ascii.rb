@@ -76,10 +76,18 @@ module Bitgram
           content = row.cells.zip(fits).map do |cell, fit|
             cell_line(cell, fit, index, height) + edge
           end.join
-          remaining = @width - row.cells.sum(&:bits)
-          content += (" " * ((2 * remaining) - 1)) + edge if remaining.positive?
-          edge + content
+          edge + pad(row, content, edge)
         end
+      end
+
+      # Blank space where a partial row has no cells: on the right, or on the left when
+      # layout.field_order is lsb_first.
+      def pad(row, content, edge)
+        leading = row.cells.first&.col.to_i
+        remaining = @width - row.cells.sum(&:bits) - leading
+        content += (" " * ((2 * remaining) - 1)) + edge if remaining.positive?
+        content = (" " * ((2 * leading) - 1)) + edge + content if leading.positive?
+        content
       end
 
       def cell_line(cell, fit, index, height)

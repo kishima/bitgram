@@ -16,7 +16,8 @@ module Bitgram
         @col = @position = @row_position = 0
         document.fields.each { |field| place(field) }
         append_row(:normal) unless @pending.empty?
-        Result.new(document, @rows.freeze, [].freeze)
+        rows = document.layout["field_order"] == "lsb_first" ? @rows.map { |row| mirror(row) } : @rows
+        Result.new(document, rows.freeze, [].freeze)
       end
 
       private
@@ -61,6 +62,15 @@ module Bitgram
         @rows << Row.new(@rows.size, kind, @pending.freeze, span, @row_position)
         @pending = []
         @col = 0
+      end
+
+      # lsb_first: fields are listed from the least significant bit, as C declares bit-fields.
+      # Rows are filled in the same order as msb_first, then each row is drawn right to left,
+      # so the first field ends at the row's right edge. A partial last row keeps its gap on
+      # the left (the missing high bits).
+      def mirror(row)
+        cells = row.cells.reverse.map { |cell| cell.with(col: @width - cell.col - cell.bits) }
+        row.with(cells: cells.freeze)
       end
 
       def part_of(consumed, take, total)

@@ -70,8 +70,19 @@ Offsets become unknown after a variable-length field. A variable field extending
 | `split_label` | `range`, `first`, `repeat` | `range` |
 | `split_suffix` | Range template with `{from}` and `{to}` | `" [{from}:{to}]"` |
 | `allow_partial_row` | Boolean; suppress the incomplete-final-row warning | `false` |
+| `field_order` | `msb_first`, `lsb_first`; whether the first field is drawn at the left (most significant) or right (least significant) end of its row | `msb_first` |
 
-Bit numbering is local to each row and does not reorder fields. `lsb0` places bit zero on the right. Split ranges remain relative to the field, regardless of numbering direction. `first` labels subsequent pieces `(cont.)`; `repeat` repeats the field name. Offset labels count bytes, or bits with a `b` suffix when a row starts between byte boundaries.
+Bit numbering is local to each row and does not reorder fields. `lsb0` places bit zero on the right. To list fields the way C declares bit-fields, from the least significant bit, set `field_order: lsb_first`: rows are filled in the listed order as usual, and each row is then drawn right to left, so the first field ends at the right edge. A field crossing a row boundary starts at the left of one row and continues at the right of the next, and a partial last row leaves its gap on the left. Combine it with `bit_order: lsb0` to number the right edge bit 0:
+
+```yaml
+layout: { row_bits: 32, bit_order: lsb0, field_order: lsb_first }
+fields:            # struct RBasic: tt:8, gc_color:3, frozen:1, flags:20
+  - { name: tt, bits: 8 }        # bits 7..0
+  - { name: gc_color, bits: 3 }  # bits 10..8
+  - { name: frozen, bits: 1 }    # bit 11
+  - { name: flags, bits: 20 }    # bits 31..12
+```
+ Split ranges remain relative to the field, regardless of numbering direction. `first` labels subsequent pieces `(cont.)`; `repeat` repeats the field name. Offset labels count bytes, or bits with a `b` suffix when a row starts between byte boundaries.
 
 ## ASCII
 

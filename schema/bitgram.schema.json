@@ -44,6 +44,13 @@
         "type": "string",
         "maxLength": 65536
       }
+    },
+    "annotations": {
+      "type": "array",
+      "maxItems": 10000,
+      "items": {
+        "$ref": "#/$defs/annotation"
+      }
     }
   },
   "required": [
@@ -201,6 +208,18 @@
             "msb_first",
             "lsb_first"
           ]
+        },
+        "row_labels": {
+          "type": "array",
+          "maxItems": 4096,
+          "items": {
+            "type": "string",
+            "maxLength": 256
+          }
+        },
+        "bit_numbers_label": {
+          "type": "string",
+          "maxLength": 256
         }
       }
     },
@@ -423,6 +442,46 @@
           "type": "boolean"
         }
       }
+    },
+    "annotation": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "label": {
+          "type": "string",
+          "maxLength": 256
+        },
+        "values": {
+          "type": "object",
+          "maxProperties": 10000,
+          "propertyNames": {
+            "pattern": "^[a-z0-9][a-z0-9_-]*$"
+          },
+          "additionalProperties": {
+            "type": [
+              "string",
+              "integer"
+            ],
+            "maxLength": 256
+          }
+        },
+        "per_bit": {
+          "type": "boolean"
+        },
+        "style": {
+          "type": "string",
+          "enum": [
+            "boxed",
+            "plain"
+          ]
+        },
+        "fill": {
+          "$ref": "#/$defs/color"
+        }
+      },
+      "required": [
+        "values"
+      ]
     }
   }
 }

@@ -59,6 +59,7 @@ module Bitgram
 
         def draw_numbers(top)
           @output << '<g class="bg-bit-numbers">'
+          draw_numbers_label(top)
           @document.layout["row_bits"].times do |col|
             number = @document.layout["bit_order"] == "lsb0" ? @document.layout["row_bits"] - 1 - col : col
             x = @geometry.x + ((col + 0.5) * @options["bit_width"])
@@ -71,6 +72,17 @@ module Bitgram
             end
           end
           @output << "</g>"
+        end
+
+        # layout.bit_numbers_label, on the line of the ones digits, right-aligned like row labels.
+        def draw_numbers_label(top)
+          label = @document.layout["bit_numbers_label"].to_s
+          return if label.empty?
+
+          attributes = text_attributes("bg-bit-number bg-bit-numbers-label", 11)
+                       .merge(x: @geometry.x - 8, y: top + (@options["bit_number_style"] == "rfc" ? 28 : 16),
+                              "text-anchor": "end", fill: @theme["header_text"])
+          emit("text", attributes, label)
         end
 
         def draw_ticks(row, y, height)
@@ -89,8 +101,8 @@ module Bitgram
           end
         end
 
-        def draw_offset(row, y, height)
-          label = @result.offset_label(row)
+        # A row's offset or row label, or an annotation's label, right-aligned left of the cells.
+        def draw_gutter_label(label, y, height)
           return if label.empty?
 
           baseline = y + ([height, @options["row_height"]].min / 2) + (@options["font_size"] * 0.35)

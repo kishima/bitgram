@@ -10,6 +10,7 @@ require_relative "svg/geometry"
 require_relative "svg/decorations"
 require_relative "svg/cells"
 require_relative "svg/leaders"
+require_relative "svg/annotations"
 
 module Bitgram
   # @api private
@@ -18,6 +19,7 @@ module Bitgram
     class Svg
       include Decorations
       include Cells
+      include Annotations
 
       attr_reader :issues, :width, :height
 
@@ -66,9 +68,10 @@ module Bitgram
       end
 
       def measure
+        @annotation_boxes = fit_annotations
         @leaders = @result.rows.each_with_index.map { |row, index| place_leaders(row, @fits[index]) }
         @geometry = Geometry.new(@result, @options, @fits, @footer, @measurer,
-                                 band_heights: @leaders.map { |labels| leader_band(labels) })
+                                 band_heights: @leaders.map { |labels| leader_band(labels) + annotation_height })
         @width = @geometry.width
         @height = @geometry.height
       end
@@ -121,6 +124,13 @@ module Bitgram
         return slug unless slug.empty?
 
         content = @document.to_h.merge(fields: @document.fields.map(&:to_h))
+        # Annotations came after the digest was defined; leave them out when there are none so
+        # that ids of diagrams without them stay as they were.
+        content = if @document.annotations.empty?
+                    content.except(:annotations)
+                  else
+                    content.merge(annotations: @document.annotations.map(&:to_h))
+                  end
         "bitgram-#{Digest::SHA256.hexdigest(JSON.generate(content))[0, 8]}"
       end
 
@@ -134,8 +144,9 @@ module Bitgram
           @output << "<g #{XmlBuilder.attributes(attributes)}>"
           row.cells.each_with_index { |cell, col| draw_cell(cell, row, y, row_height, @fits[index][col]) }
           draw_ticks(row, y, row_height) if @options["ticks"]
-          draw_offset(row, y, row_height)
+          draw_gutter_label(@result.gutter_label(row), y, row_height)
           draw_leaders(@leaders[index], y + row_height)
+          draw_annotations(@annotation_boxes[index], y + row_height + leader_band(@leaders[index]))
           @output << "</g>"
           y += row_height + @geometry.band_heights[index]
         end

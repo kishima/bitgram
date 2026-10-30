@@ -28,6 +28,7 @@ notes:
 | `description` | String, used in SVG accessibility text | None |
 | `layout`, `ascii`, `svg`, `raster`, `pdf` | Configuration objects below | Built-in settings |
 | `notes` | Array of strings shown below the drawing | `[]` |
+| `annotations` | Array of lines drawn under each row of fields; see [Annotations](#annotations) | `[]` |
 
 ## Fields
 
@@ -71,6 +72,8 @@ Offsets become unknown after a variable-length field. A variable field extending
 | `split_suffix` | Range template with `{from}` and `{to}` | `" [{from}:{to}]"` |
 | `allow_partial_row` | Boolean; suppress the incomplete-final-row warning | `false` |
 | `field_order` | `msb_first`, `lsb_first`; whether the first field is drawn at the left (most significant) or right (least significant) end of its row | `msb_first` |
+| `row_labels` | Array of strings; the label of each logical row, drawn left of it in place of its offset | None |
+| `bit_numbers_label` | String drawn left of the bit numbers, such as `bit` | None |
 
 Bit numbering is local to each row and does not reorder fields. `lsb0` places bit zero on the right. To list fields the way C declares bit-fields, from the least significant bit, set `field_order: lsb_first`: rows are filled in the listed order as usual, and each row is then drawn right to left, so the first field ends at the right edge. A field crossing a row boundary starts at the left of one row and continues at the right of the next, and a partial last row leaves its gap on the left. Combine it with `bit_order: lsb0` to number the right edge bit 0:
 
@@ -83,6 +86,42 @@ fields:            # struct RBasic: tt:8, gc_color:3, frozen:1, flags:20
   - { name: flags, bits: 20 }    # bits 31..12
 ```
  Split ranges remain relative to the field, regardless of numbering direction. `first` labels subsequent pieces `(cont.)`; `repeat` repeats the field name. Offset labels count bytes, or bits with a `b` suffix when a row starts between byte boundaries.
+
+`row_labels` names rows instead of numbering them, for diagrams that compare several values of one word rather than lay out consecutive bytes. The first string labels the first logical row (a merged block or a variable-length row counts as one), and so on; a row with no string keeps its offset label, or nothing when `offsets` is `none`. The left-hand column is as wide as its longest label, and appears whenever `row_labels`, `bit_numbers_label`, or a labeled annotation is present, even with `offsets: none`. Write labels such as `nil`, `true`, or `false` in quotes in YAML so that they stay strings.
+
+```yaml
+layout: { row_bits: 10, bit_numbers: false, row_labels: ["nil", "false", "true"] }
+fields:
+  - { name: "…", bits: 2 }
+  # ... eight one-bit fields per row
+```
+
+## Annotations
+
+`annotations` adds lines of text under each row of fields, for values that belong to fields but are not their names: the width of each field, an example bit pattern, the value each field holds, or the order in which a tool prints them. Each line is one `svg.row_height` high and is drawn under every row, below any names hung there by the `leader` strategy.
+
+| Key | Type and meaning | Default |
+|---|---|---|
+| `values` | Required object; keys are field ids (explicit, or made from the name as described under Fields), values are strings or integers | — |
+| `label` | String drawn left of the line, in the same column as row labels | None |
+| `per_bit` | Boolean; each value has one character per bit of its field, written most significant bit first, and each character gets its own cell | `false` |
+| `style` | `boxed` draws a rectangle around each value; `plain` draws the text alone | `boxed` |
+| `fill` | Color of the rectangles | Theme `cell_fill` |
+
+```yaml
+fields:
+  - { id: n, name: n, bits: 1 }
+  - { id: m1, name: m1, bits: 5 }
+  # ...
+annotations:
+  - { label: example bits, per_bit: true, values: { n: "0", m1: "00010" } }
+  - { label: field value, fill: "#e6e6e6", values: { n: 0, m1: 2 } }
+  - { label: dump order, style: plain, values: { m1: 1, n: 8 } }
+```
+
+A field without a value leaves its place empty. A value naming no field, or a `per_bit` value whose length differs from the field's width (`display_bits` for a variable field), is error `V-03`. When a field is split over rows, its value appears under its first piece; a `per_bit` value is split with the field, the most significant characters going with the most significant bits (the first piece with `msb_first`, the last with `lsb_first`).
+
+In a box, text that is too wide shrinks in 0.5-pixel steps down to `min_font_size`, and is then truncated with warning `V-09`. Plain text shrinks to fit the whole width of its cell and is never truncated; at `min_font_size` it may extend beside the cell. ASCII output closes each row's border before its annotation lines and writes them without borders, centered under each cell; text wider than its cell pushes the rest of the line to the right.
 
 ## ASCII
 

@@ -119,6 +119,21 @@ module Bitgram
       end
       Array(rule["required"]).each { |key| add("V-03", "#{path}.#{key}", "is required") unless value.key?(key) }
       properties.each { |key, child| check(value[key], child, "#{path}.#{key}") if value.key?(key) }
+      check_map(value, rule, path) if rule["additionalProperties"].is_a?(Hash)
+    end
+
+    # An object whose keys are data (annotation values keyed by field id).
+    def check_map(value, rule, path)
+      if rule["maxProperties"] && value.size > rule["maxProperties"]
+        add("V-07", path, "too many entries (maximum #{rule['maxProperties']})")
+        return
+      end
+      value.each do |key, item|
+        if rule["propertyNames"] && !matches?(key, rule["propertyNames"])
+          add("V-03", "#{path}.#{key}", "invalid key format")
+        end
+        check(item, rule["additionalProperties"], "#{path}.#{key}")
+      end
     end
 
     def check_array(value, rule, path)
@@ -145,6 +160,29 @@ module Bitgram
       return if @issues.any? { |issue| issue.severity == :error }
 
       check_positions(fields, data.fetch("layout", {}))
+      check_annotations(data["annotations"], fields, data.fetch("layout", {})) if data["annotations"].is_a?(Array)
+    end
+
+    # Annotation values must name fields, and a per_bit value needs one character per bit.
+    def check_annotations(annotations, fields, layout)
+      row_bits = layout.fetch("row_bits", 32)
+      widths = Config.field_ids(fields).zip(fields).to_h do |id, field|
+        [id, field["bits"] == "variable" ? field.fetch("display_bits", row_bits) : field_bits(field)]
+      end
+      annotations.each_with_index do |annotation, index|
+        annotation.fetch("values", {}).each do |id, text|
+          path = "$.annotations[#{index}].values.#{id}"
+          if !widths.key?(id)
+            add("V-03", path, "unknown field id #{id.inspect}")
+          elsif annotation["per_bit"] && (length = text.to_s.scan(/\X/).size) != widths[id]
+            add("V-03", path, "per_bit needs #{widths[id]} characters, one per bit (found #{length})")
+          end
+        end
+      end
+    end
+
+    def field_bits(field)
+      field.fetch("bits") { field["bytes"] * 8 }
     end
 
     def check_positions(fields, layout)

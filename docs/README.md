@@ -1,12 +1,12 @@
 # docs
 
-This fork (kishima/bitgram) adds what the book "Deep dive into mruby" needs for its figures. The reference documents describe the fork, including its additions (shared settings file, PDF output, `field_order`, strategies for narrow fields, `ligatures`); the plans and worklog record how they were made.
+This fork (kishima/bitgram) adds what the book "Deep dive into mruby" needs for its figures. The reference documents describe the fork, including its additions (shared settings file, PDF output, `field_order`, strategies for narrow fields, `ligatures`, `annotations`, `row_labels`); the plans and worklog record how they were made.
 
 ## Reference
 
 | File | Contents |
 |---|---|
-| [format.md](format.md) | Definition format, version 1: fields, layout, ascii, svg, raster, pdf, shared settings file |
+| [format.md](format.md) | Definition format, version 1: fields, layout, annotations, ascii, svg, raster, pdf, shared settings file |
 | [cli.md](cli.md) | Command-line reference |
 | [ruby-api.md](ruby-api.md) | Ruby API |
 | [presets.md](presets.md) | Bundled protocol definitions |

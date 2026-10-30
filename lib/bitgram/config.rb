@@ -85,6 +85,26 @@ module Bitgram
       end
     end
 
+    # Field ids as the definition gives them, or made from the name: a slug, or field-N when
+    # the slug is empty, with -2, -3, ... added until it is unique.
+    def field_ids(fields)
+      used = fields.filter_map { |field| field["id"] }.to_h { |id| [id, true] }
+      fields.each_with_index.map { |field, index| field["id"] || unique_id(field["name"], index, used) }
+    end
+
+    def unique_id(name, index, used)
+      base = slug(name.to_s)
+      base = "field-#{index + 1}" if base.empty?
+      id = base
+      suffix = 1
+      while used[id]
+        suffix += 1
+        id = "#{base}-#{suffix}"
+      end
+      used[id] = true
+      id
+    end
+
     def slug(text)
       text.downcase.gsub(/[^a-z0-9]+/, "-").gsub(/\A-|-\z/, "")
     end

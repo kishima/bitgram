@@ -52,10 +52,10 @@ module Bitgram
                            else
                              0
                            end
-          @gutter = if result.document.layout["offsets"] == "none"
+          @gutter = if result.document.layout["offsets"] == "none" && !result.labeled_gutter?
                       0
                     else
-                      result.rows.map { |row| measurer.width(result.offset_label(row)) }.max.to_f + 12
+                      result.gutter_labels.map { |label| measurer.width(label) }.max.to_f + 12
                     end
         end
 

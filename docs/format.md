@@ -43,6 +43,7 @@ notes:
 | `value` | String or integer, shown as a fixed value | None |
 | `reserved` | Boolean; SVG hatch fill | `false` |
 | `optional` | Boolean; SVG dashed border | `false` |
+| `bit_numbers` | Boolean; `false` leaves out the bit numbers above this field and the ticks inside it; see [Layout](#layout) | `true` |
 | `display_bits` | Positive integer up to 128, illustrative variable-field width | `layout.row_bits` |
 | `class` | String or array of strings; SVG classes | None |
 | `fill` | Color override | Theme |
@@ -90,11 +91,13 @@ fields:            # struct RBasic: tt:8, gc_color:3, frozen:1, flags:20
 `row_labels` names rows instead of numbering them, for diagrams that compare several values of one word rather than lay out consecutive bytes. The first string labels the first logical row (a merged block or a variable-length row counts as one), and so on; a row with no string keeps its offset label, or nothing when `offsets` is `none`. The left-hand column is as wide as its longest label, and appears whenever `row_labels`, `bit_numbers_label`, or a labeled annotation is present, even with `offsets: none`. Write labels such as `nil`, `true`, or `false` in quotes in YAML so that they stay strings.
 
 ```yaml
-layout: { row_bits: 10, bit_numbers: false, row_labels: ["nil", "false", "true"] }
+layout: { row_bits: 10, bit_order: lsb0, row_labels: ["nil", "false", "true"] }
 fields:
-  - { name: "…", bits: 2 }
+  - { name: "…", bits: 2, bit_numbers: false }
   # ... eight one-bit fields per row
 ```
+
+A field's `bit_numbers: false` is for a cell that stands for more bits than its columns, such as the `…` above: the bit numbers above its columns are left out (the eight one-bit fields keep 7 to 0), and so are the ticks inside it, since both would say that each column is one bit. The bit numbers are drawn once above the first row, so only fields in the first row affect them; the ticks follow the field in every row. The header line keeps its height. To drop the whole line, use `layout.bit_numbers: false`. The ASCII output leaves out the same numbers.
 
 ## Annotations
 

@@ -60,7 +60,10 @@ module Bitgram
         def draw_numbers(top)
           @output << '<g class="bg-bit-numbers">'
           draw_numbers_label(top)
+          hidden = @result.unnumbered_columns
           @document.layout["row_bits"].times do |col|
+            next if hidden.include?(col)
+
             number = @document.layout["bit_order"] == "lsb0" ? @document.layout["row_bits"] - 1 - col : col
             x = @geometry.x + ((col + 0.5) * @options["bit_width"])
             attributes = text_attributes("bg-bit-number", 11).merge(x: x, fill: @theme["header_text"])
@@ -88,6 +91,8 @@ module Bitgram
         def draw_ticks(row, y, height)
           width = @document.layout["row_bits"]
           (1...width).each do |col|
+            next if inside_unnumbered_field?(row, col)
+
             x = @geometry.x + (col * @options["bit_width"])
             emit("line", { class: "bg-tick", x1: x, y1: y, x2: x, y2: y + 4, stroke: @theme["stroke"] })
           end
@@ -99,6 +104,12 @@ module Bitgram
               emit("line", { class: "bg-tick", x1: x, y1: boundary, x2: x + 6, y2: boundary, stroke: @theme["stroke"] })
             end
           end
+        end
+
+        # A field with bit_numbers: false does not say how many bits its columns hold, so it gets
+        # no ticks inside it either (the boundary at col is inside when a cell covers both sides).
+        def inside_unnumbered_field?(row, col)
+          row.cells.any? { |cell| !cell.field.bit_numbers && cell.col < col && col < cell.col + cell.bits }
         end
 
         # A row's offset or row label, or an annotation's label, right-aligned left of the cells.

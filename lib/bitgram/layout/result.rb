@@ -35,6 +35,14 @@ module Bitgram
         labels
       end
 
+      # The bit numbers sit above the first row, so a column loses its number when the field
+      # drawn there in the first row has bit_numbers: false.
+      # @return [Array<Integer>] columns (from the left) whose bit number is left out
+      def unnumbered_columns
+        cells = rows.first&.cells || []
+        cells.reject { |cell| cell.field.bit_numbers }.flat_map { |cell| (cell.col...(cell.col + cell.bits)).to_a }
+      end
+
       # @return [Boolean] whether anything besides offsets asks for the left-hand column
       def labeled_gutter?
         document.layout.key?("row_labels") || document.layout.key?("bit_numbers_label") ||

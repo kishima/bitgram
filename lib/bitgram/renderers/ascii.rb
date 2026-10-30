@@ -108,7 +108,10 @@ module Bitgram
       def header
         tens = Array.new((2 * @width) + 1, " ")
         ones = Array.new((2 * @width) + 1, " ")
+        hidden = @result.unnumbered_columns
         @width.times do |column|
+          next if hidden.include?(column)
+
           number = @document.layout["bit_order"] == "lsb0" ? @width - 1 - column : column
           tens[(2 * column) + 1, (number / 10).to_s.size] = (number / 10).to_s.chars if (number % 10).zero?
           ones[(2 * column) + 1] = (number % 10).to_s

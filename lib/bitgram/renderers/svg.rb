@@ -123,7 +123,7 @@ module Bitgram
         slug = @document.title.to_s.downcase.gsub(/[^a-z0-9]+/, "-").gsub(/\A-|-\z/, "")
         return slug unless slug.empty?
 
-        content = @document.to_h.merge(fields: @document.fields.map(&:to_h))
+        content = @document.to_h.merge(fields: @document.fields.map { |field| field_digest(field) })
         # Annotations came after the digest was defined; leave them out when there are none so
         # that ids of diagrams without them stay as they were.
         content = if @document.annotations.empty?
@@ -132,6 +132,12 @@ module Bitgram
                     content.merge(annotations: @document.annotations.map(&:to_h))
                   end
         "bitgram-#{Digest::SHA256.hexdigest(JSON.generate(content))[0, 8]}"
+      end
+
+      # bit_numbers came after the digest was defined; leave it out when it is the default (true)
+      # so that ids of diagrams that do not use it stay as they were.
+      def field_digest(field)
+        field.bit_numbers ? field.to_h.except(:bit_numbers) : field.to_h
       end
 
       def draw_rows

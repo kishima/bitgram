@@ -26,7 +26,7 @@ module Bitgram
                        value: field["value"], reserved: field.fetch("reserved", false),
                        optional: field.fetch("optional", false),
                        classes: Array(field["class"]).flat_map(&:split).map(&:freeze).freeze,
-                       fill: field["fill"])
+                       fill: field["fill"], bit_numbers: field.fetch("bit_numbers", true))
     end
 
     # Values become strings; style defaults to boxed.

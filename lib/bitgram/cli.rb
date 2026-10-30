@@ -7,7 +7,8 @@ module Bitgram
   # @api private
   class CLI
     COMMANDS = %w[render validate presets init doctor version].freeze
-    FORMATS = { ".txt" => "ascii", ".svg" => "svg", ".png" => "png", ".jpg" => "jpeg", ".jpeg" => "jpeg" }.freeze
+    FORMATS = { ".txt" => "ascii", ".svg" => "svg", ".png" => "png", ".jpg" => "jpeg", ".jpeg" => "jpeg",
+                ".pdf" => "pdf" }.freeze
 
     def initialize(stdin: $stdin, stdout: $stdout, stderr: $stderr)
       @stdin = stdin
@@ -111,7 +112,7 @@ module Bitgram
     def output_format(options)
       output = options[:output]
       format = options[:format] || FORMATS[File.extname(output.to_s).downcase] || "ascii"
-      if %w[png jpeg].include?(format) && [nil, "-"].include?(output)
+      if %w[png jpeg pdf].include?(format) && [nil, "-"].include?(output)
         raise OptionParser::InvalidArgument, "#{format} requires --output PATH"
       end
 

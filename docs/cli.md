@@ -8,7 +8,7 @@
 | `validate INPUT...` | Report all validation issues in each input |
 | `presets` | List bundled protocol names |
 | `init [PRESET]` | Write a preset definition to stdout; defaults to UDP |
-| `doctor` | Report Ruby, converters, CJK fonts, and automatic selections |
+| `doctor` | Report Ruby, converters, Chromium for PDF, CJK fonts, and automatic selections |
 | `version` | Print the gem version |
 
 Use `-` as an input to read stdin. Files use their `.yml`, `.yaml`, or `.json` extension; otherwise input beginning with `{` is JSON and other input is YAML. `--input-format yaml|json` overrides detection.
@@ -17,7 +17,7 @@ Use `-` as an input to read stdin. Files use their `.yml`, `.yaml`, or `.json` e
 
 | Option | Meaning |
 |---|---|
-| `-f, --format ascii|svg|png|jpeg` | Explicit output format |
+| `-f, --format ascii|svg|png|jpeg|pdf` | Explicit output format |
 | `-o, --output PATH` | Output path; omitted or `-` means stdout |
 | `--preset NAME` | Use a bundled definition instead of INPUT |
 | `--config PATH` | Shared settings file applied beneath the definition (also accepted by `validate`) |
@@ -31,7 +31,7 @@ Use `-` as an input to read stdin. Files use their `.yml`, `.yaml`, or `.json` e
 | `--strict` | Treat warnings as failure, before writing output |
 | `--debug` | Include a backtrace on failure |
 
-Without `--format`, the output extension selects the format: `.svg`, `.txt`, `.png`, `.jpg`, or `.jpeg`. With no output path, the default is ASCII. PNG and JPEG require a file path.
+Without `--format`, the output extension selects the format: `.svg`, `.txt`, `.png`, `.jpg`, `.jpeg`, or `.pdf`. With no output path, the default is ASCII. PNG, JPEG, and PDF require a file path. PDF output uses headless Chromium; see [PDF](format.md#pdf) for how it is found and how the page is sized.
 
 `--set` takes precedence over dedicated options, regardless of their argument order. Dedicated options override the definition, and the definition overrides the `--config` file (see [Shared settings file](format.md#shared-settings-file)). Values `true` and `false` become booleans, whole numbers become integers, decimal numbers become floats, and other values remain strings. Unknown configuration keys are validation errors.
 
@@ -41,6 +41,7 @@ bitgram render header.yml --set svg.font_size=12.5 --set ascii.indent=3
 cat header.json | bitgram render - --input-format json -f svg
 bitgram validate definitions/*.yml --strict
 bitgram render figure.yml --config book.yml -o figure.svg
+bitgram render figure.yml --config book.yml -o figure.pdf --set pdf.chrome=/opt/chromium/chrome
 ```
 
 Validation issues go to stderr and include a JSON path and a line number when available. `validate` continues through all supplied files.
@@ -50,6 +51,6 @@ Validation issues go to stderr and include a JSON path and a line number when av
 | 0 | Success |
 | 1 | Parse/validation failure or warnings under `--strict` |
 | 2 | Invalid command, arguments, or options |
-| 3 | Raster backend missing, unsupported, failed, or timed out |
+| 3 | Raster or PDF backend (Chromium) missing, unsupported, failed, or timed out |
 | 4 | File input/output failure |
 | 70 | Unexpected internal error |

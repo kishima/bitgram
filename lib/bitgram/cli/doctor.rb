@@ -12,6 +12,8 @@ module Bitgram
         state = converter.available? ? "available (#{converter.version})" : "not found"
         @stdout.puts("#{labels.fetch(name).ljust(14)}#{state}")
       end
+      require_relative "../pdf/chromium"
+      @stdout.puts("Chromium      #{Pdf::Chromium.locate || 'not found'} (PDF output)")
       @stdout.puts("CJK font      #{cjk_fonts}")
       selections = %i[png jpeg].map do |format|
         "#{format}: #{Rasterizers::Registry.select(:auto, format: format, timeout: 30).name}"

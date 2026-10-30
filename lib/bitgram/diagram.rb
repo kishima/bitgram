@@ -36,7 +36,7 @@ module Bitgram
 
     # Write a diagram, inferring format from the extension unless specified.
     # @param path [String] output filename
-    # @param format [Symbol, nil] ascii, svg, png, or jpeg
+    # @param format [Symbol, nil] ascii, svg, png, jpeg, or pdf
     # @return [String] output filename
     def save(path, format: nil, **options)
       format = (format || File.extname(path.to_s).delete_prefix(".")).to_s
@@ -45,6 +45,7 @@ module Bitgram
       when "ascii" then File.write(path, to_ascii(**options))
       when "svg" then File.write(path, to_svg(**options))
       when "png", "jpeg" then save_raster(path, format.to_sym, options)
+      when "pdf" then save_pdf(path, options)
       else raise ArgumentError, "unknown output format: #{format}"
       end
       path.to_s
@@ -66,6 +67,28 @@ module Bitgram
       raw = Config.deep_merge(@source || { "version" => 1, "fields" => [] }, kind.to_s => Config.stringify(options))
       errors = Validator.new.call(raw).select { |issue| issue.severity == :error }
       raise ValidationError, errors unless errors.empty?
+    end
+
+    # PDF options: pdf section keys and raster.timeout; everything else goes to the SVG renderer.
+    def save_pdf(path, options)
+      pdf_keys = Config::DEFAULTS["pdf"].keys + ["chrome"]
+      grouped = options.group_by do |key, _|
+        next :pdf if pdf_keys.include?(key.to_s)
+
+        key.to_s == "timeout" ? :raster : :svg
+      end.transform_values(&:to_h)
+      validate_options(:pdf, grouped.fetch(:pdf, {}))
+      validate_options(:raster, grouped.fetch(:raster, {}))
+      config = Config.deep_merge(Config::DEFAULTS["pdf"], (@source || {}).fetch("pdf", {}))
+      config = Config.deep_merge(config, Config.stringify(grouped.fetch(:pdf, {})))
+      timeout = Config.deep_merge(@document.raster, Config.stringify(grouped.fetch(:raster, {})))["timeout"]
+      svg, renderer = render(:svg, grouped.fetch(:svg, {}).merge(inline_styles: true))
+
+      require_relative "pdf/chromium"
+      printer = Pdf::Chromium.new(binary: Pdf::Chromium.locate(config["chrome"]), timeout: timeout,
+                                  sandbox: config["sandbox"])
+      printer.write(svg, width: renderer.width, height: renderer.height, path: path.to_s,
+                         page_step: config["page_step"])
     end
 
     def save_raster(path, format, options)

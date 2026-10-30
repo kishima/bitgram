@@ -28,10 +28,14 @@ module Bitgram
                  "min_font_size" => 9, "char_width_ratio" => 0.6, "bit_number_style" => "full",
                  "ticks" => true, "show_title" => true, "inline_styles" => false,
                  "fit_order" => %w[single shrink wrap short vertical footnote truncate] },
-      "raster" => { "scale" => 2, "quality" => 90, "rasterizer" => "auto", "timeout" => 30 }
+      "raster" => { "scale" => 2, "quality" => 90, "rasterizer" => "auto", "timeout" => 30 },
+      # page_step: Chromium 153 reproduced page sizes that are multiples of 8 CSS px (6pt) exactly
+      # in the PDF MediaBox and moved others by up to about 1px, sometimes downward (measured
+      # 2026-10-30, docs/worklog/2026-10-30-book-b1-b3.md).
+      "pdf" => { "page_step" => 8, "sandbox" => true }
     }.then { |defaults| deep_freeze(defaults) }
 
-    SHARED_SECTIONS = %w[layout ascii svg raster].freeze
+    SHARED_SECTIONS = %w[layout ascii svg raster pdf].freeze
 
     # Read a shared settings file (or Hash) holding only configuration sections, such as
     # the fonts and colors common to every diagram in a book. Values are validated against

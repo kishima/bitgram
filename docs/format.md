@@ -26,7 +26,7 @@ notes:
 | `fields` | Nonempty array; required, at most 10,000 fields | — |
 | `title` | String, at most 256 characters | None |
 | `description` | String, used in SVG accessibility text | None |
-| `layout`, `ascii`, `svg`, `raster` | Configuration objects below | Built-in settings |
+| `layout`, `ascii`, `svg`, `raster`, `pdf` | Configuration objects below | Built-in settings |
 | `notes` | Array of strings shown below the drawing | `[]` |
 
 ## Fields
@@ -133,7 +133,7 @@ Automatic selection chooses the first available backend supporting the requested
 
 ## Shared settings file
 
-Settings common to many diagrams (fonts, sizes, theme) can live in one file that holds only the `layout`, `ascii`, `svg`, and `raster` sections, passed with `--config PATH` or the `config:` keyword of the Ruby API:
+Settings common to many diagrams (fonts, sizes, theme) can live in one file that holds only the `layout`, `ascii`, `svg`, `raster`, and `pdf` sections, passed with `--config PATH` or the `config:` keyword of the Ruby API:
 
 ```yaml
 # book.yml
@@ -143,6 +143,20 @@ svg:
 ```
 
 Settings are combined in this order, later ones winning: built-in defaults, the shared settings file, the definition, dedicated command-line options, then `--set`. The file is validated with the same schema as a definition's sections, and errors carry the file's own line numbers. Any other top-level key, such as `fields`, is an error. A theme path inside the file is resolved like any other theme path, from the current directory.
+
+## PDF
+
+| Key | Values | Default |
+|---|---|---|
+| `chrome` | Path to a Chromium or Chrome executable | Found automatically, see below |
+| `page_step` | Integer, 1–4096; the page size is rounded up to a multiple of this many pixels | `8` |
+| `sandbox` | Boolean; `false` passes `--no-sandbox`, which Chromium needs when run as root or in some containers | `true` |
+
+PDF output prints the SVG (always with inline styles, as for raster output) with headless Chromium's `--print-to-pdf`. The result is one page; text remains text, and Chromium embeds the fonts it used (TrueType fonts as `/FontFile2` subsets). The timeout is `raster.timeout`.
+
+The page is the SVG's width and height rounded up to a multiple of `page_step` pixels, with the SVG centered on it, and the MediaBox is that size times 0.75 points. The default of 8 comes from measurement: Chromium 153 reproduced page sizes that are multiples of 8 CSS pixels (6pt) exactly, while other sizes moved by up to about one pixel, sometimes downward. With `page_step: 1` the page is the SVG size rounded up to whole pixels, subject to that adjustment; the output is still one page.
+
+Chromium is looked up in this order: `pdf.chrome`, the `BITGRAM_CHROME` environment variable, `chromium`, `chromium-browser`, `google-chrome`, `google-chrome-stable`, or `chrome` on `PATH`, then the newest `~/.cache/ms-playwright/*/chrome-linux64/chrome` installed by `npx playwright install chromium`. `bitgram doctor` shows which one is used.
 
 ## Diagnostics and limits
 

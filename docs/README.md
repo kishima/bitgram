@@ -6,7 +6,7 @@ This fork (kishima/bitgram) adds what the book "Deep dive into mruby" needs for 
 
 | File | Contents |
 |---|---|
-| [format.md](format.md) | Definition format, version 1: fields, layout, ascii, svg, raster, shared settings file |
+| [format.md](format.md) | Definition format, version 1: fields, layout, ascii, svg, raster, pdf, shared settings file |
 | [cli.md](cli.md) | Command-line reference |
 | [ruby-api.md](ruby-api.md) | Ruby API |
 | [presets.md](presets.md) | Bundled protocol definitions |

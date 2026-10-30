@@ -12,7 +12,7 @@ RSpec.describe Bitgram::Diagram do
         expect(diagram.save(path)).to eq(path)
         expect(File.read(path)).to eq(extension == "txt" ? diagram.to_ascii : diagram.to_svg)
       end
-      expect { diagram.save(File.join(dir, "x.pdf")) }.to raise_error(ArgumentError)
+      expect { diagram.save(File.join(dir, "x.bmp")) }.to raise_error(ArgumentError)
     end
   end
 

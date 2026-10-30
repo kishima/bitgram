@@ -9,7 +9,7 @@ diagram = Bitgram.load({ version: 1, fields: [{ name: "A", bytes: 4 }] })
 diagram = Bitgram.preset(:tcp)
 ```
 
-`Bitgram.load` accepts a YAML/JSON string or a Ruby Hash. `load_file` reads UTF-8 files, and `preset` loads a bundled protocol. Nested override hashes passed to the loading APIs are merged into the definition and validated. The `config:` keyword (a path or a Hash holding only `layout`, `ascii`, `svg`, and `raster`) supplies shared settings beneath the definition, as `--config` does: `Bitgram.load_file("figure.yml", config: "book.yml")`.
+`Bitgram.load` accepts a YAML/JSON string or a Ruby Hash. `load_file` reads UTF-8 files, and `preset` loads a bundled protocol. Nested override hashes passed to the loading APIs are merged into the definition and validated. The `config:` keyword (a path or a Hash holding only `layout`, `ascii`, `svg`, `raster`, and `pdf`) supplies shared settings beneath the definition, as `--config` does: `Bitgram.load_file("figure.yml", config: "book.yml")`.
 
 ```ruby
 diagram = Bitgram.preset(:udp, layout: { offsets: "hex" })
@@ -20,9 +20,10 @@ diagram.save("header.txt")
 diagram.save("header.svg", theme: "mono")
 diagram.save("header.png", scale: 2)
 diagram.save("header.jpg", quality: 85, background: "#ffffff")
+diagram.save("header.pdf", page_step: 1, chrome: "/opt/chromium/chrome")
 ```
 
-Renderer keywords override the corresponding `ascii`, `svg`, or `raster` section. `save` infers its format from the filename; `format: :svg` explicitly selects a format. PNG/JPEG always render SVG with inline styles first. JPEG rejects a transparent background.
+Renderer keywords override the corresponding `ascii`, `svg`, or `raster` section. `save` infers its format from the filename; `format: :svg` explicitly selects a format. PNG/JPEG always render SVG with inline styles first. JPEG rejects a transparent background. PDF output prints the SVG with headless Chromium; its keywords are the `pdf` section's keys plus `timeout`, and the other keywords go to the SVG renderer.
 
 ## Validation and layout
 

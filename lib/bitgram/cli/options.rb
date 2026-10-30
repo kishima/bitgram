@@ -24,7 +24,7 @@ module Bitgram
     end
 
     def render_options(parser, options)
-      parser.on("-f", "--format FORMAT", %w[ascii svg png jpeg]) { |value| options[:format] = value }
+      parser.on("-f", "--format FORMAT", %w[ascii svg png jpeg pdf]) { |value| options[:format] = value }
       parser.on("-o", "--output PATH") { |value| options[:output] = value }
       parser.on("--preset NAME") { |value| options[:preset] = value }
       {

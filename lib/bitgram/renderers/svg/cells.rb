@@ -62,20 +62,30 @@ module Bitgram
         end
 
         def draw_label(fits, x, center)
-          sizes = fits.each_with_index.map do |fit, index|
-            fit && ((fit.font_size || @options["font_size"]) * (index.zero? ? 1 : 0.85))
-          end
-          total = fits.each_with_index.sum { |fit, index| fit ? fit.lines.length * sizes[index] * 1.2 : 0 }
+          scales = fits.each_index.map { |index| index.zero? ? 1 : 0.85 }
+          total = fits.each_with_index.sum { |fit, index| fit ? @geometry.fit_height(fit, scales[index]) : 0 }
           top = center - (total / 2.0)
           fits.each_with_index do |fit, index|
             next unless fit
 
-            size = sizes[index]
-            baseline = top + (size * 0.95)
+            size = (fit.font_size || @options["font_size"]) * scales[index]
             klass = index.zero? ? "bg-label" : "bg-value"
-            draw_label_lines(fit.lines, x, baseline, size, klass)
-            top += fit.lines.length * size * 1.2
+            extent = @geometry.fit_height(fit, scales[index])
+            case fit.strategy
+            when :leader then nil # Drawn below the row (Svg#draw_leaders).
+            when :rotate then draw_rotated(fit.lines.first, x, top + (extent / 2.0), size, klass)
+            else draw_label_lines(fit.lines, x, top + (size * 0.95), size, klass)
+            end
+            top += extent
           end
+        end
+
+        # Reads from bottom to top. The baseline sits 0.35em from the middle, as for offsets.
+        def draw_rotated(text, x, middle, size, klass)
+          baseline = x + (size * 0.35)
+          attributes = text_attributes(klass, size).merge(x: baseline, y: middle,
+                                                          transform: "rotate(-90 #{fmt(baseline)} #{fmt(middle)})")
+          emit("text", attributes, text)
         end
 
         def draw_label_lines(lines, x, baseline, size, klass)

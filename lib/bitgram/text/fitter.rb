@@ -43,6 +43,16 @@ module Bitgram
         when :wrap, :vertical then multiline(text, width, max_lines, strategy)
         when :footnote then footnote(options[:description] || text, width, max_lines)
         when :truncate then truncate(text, width, options.fetch(:path, "$.fields"))
+        else svg_attempt(strategy, text, width, options)
+        end
+      end
+
+      # Strategies that need a font size, so only the SVG renderer uses them.
+      def svg_attempt(strategy, text, width, options)
+        case strategy
+        when :footnote_shrink then footnote_shrink(options[:description] || text, width)
+        when :rotate then rotate(text, width)
+        when :leader then result([text], :leader) if @font_size
         end
       end
 
@@ -110,6 +120,36 @@ module Bitgram
 
         @footnotes << "#{marker}: #{body}"
         result(lines, :footnote, @font_size, body)
+      end
+
+      # SVG only: the marker kept on one line, at the largest size from font_size down to
+      # min_font_size (the same 0.5px steps as shrink) at which it fits.
+      def footnote_shrink(body, width)
+        marker = @footnote_marker.gsub("{n}", (@footnotes.size + 1).to_s)
+        size = largest_size { |candidate| @measurer.width(marker, size: candidate) <= width }
+        return unless size
+
+        @footnotes << "#{marker}: #{body}"
+        result([marker], :footnote_shrink, size, body)
+      end
+
+      # SVG only: the label turned 90 degrees, so its line height must fit the cell's width.
+      # Its length sets the row's height (Renderers::Svg::Geometry).
+      def rotate(text, width)
+        size = largest_size { |candidate| candidate <= width }
+        result([text], :rotate, size) if size
+      end
+
+      def largest_size
+        return unless @font_size && @min_font_size
+
+        size = @font_size
+        while size >= @min_font_size
+          return size if yield(size)
+
+          size -= 0.5
+        end
+        nil
       end
 
       def truncate(text, width, path)

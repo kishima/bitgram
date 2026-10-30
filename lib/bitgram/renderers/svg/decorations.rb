@@ -29,7 +29,7 @@ module Bitgram
           selector = %([id="#{@prefix}-diagram"])
           font_family = FontFamily.css(@options["font_family"])
           rules = ["#{selector} { background: #{theme['background']}; }",
-                   "#{selector} text { font-family: #{font_family}; fill: #{theme['text']}; }",
+                   "#{selector} text { font-family: #{font_family}; fill: #{theme['text']};#{ligatures} }",
                    "#{selector} .bg-cell, #{selector} .bg-edge, #{selector} .bg-tick " \
                    "{ stroke: #{theme['stroke']}; stroke-width: 1; }",
                    "#{selector} .bg-hatch { stroke: #{theme['hatch']}; }",
@@ -39,6 +39,11 @@ module Bitgram
             rules << %(#{selector} [data-field-id="#{field.id}"] .bg-cell { fill: #{theme.field_fill(field, index)}; })
           end
           rules.join("\n")
+        end
+
+        # svg.ligatures: false turns off ligatures such as "fl" and "fi" (code names read better).
+        def ligatures
+          @options["ligatures"] == false ? " font-variant-ligatures: none;" : ""
         end
 
         def draw_header

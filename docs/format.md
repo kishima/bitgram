@@ -117,6 +117,8 @@ Each bit occupies two columns. Labels use Unicode display width, including CJK t
 | `inline_styles` | Boolean | `false` |
 | `id_prefix` | Prefix for all SVG IDs | Title slug or definition digest |
 | `fit_order` | Array of fitting strategies | See below |
+| `ligatures` | Boolean; `false` writes `font-variant-ligatures: none`, so that `fl` or `fi` in a name stays two letters | `true` (the font decides) |
+| `leader_gap` | Nonnegative number; pixels between a row and the first line of names hung below it by the `leader` strategy | `8` (the space left above footnotes) |
 
 SVG includes accessible title and description elements, field IDs, and tooltips. For repeated identical diagrams embedded in one HTML page, provide a distinct `id_prefix` for each copy. Output IDs and numeric formatting are deterministic. Raster conversion always uses inline attributes; the `auto` theme uses the default light palette during conversion.
 
@@ -129,6 +131,16 @@ Colors accept hex, color names, `rgb()`, and `rgba()`. Font names must not conta
 ## Label fitting
 
 ASCII tries `single`, `wrap`, `short`, `vertical`, `footnote`, then `truncate`. SVG tries `shrink` after `single`. A custom `fit_order` changes this order. Wrapping respects words and permits breaks between CJK characters; narrow fields can stack characters vertically. Shrinking uses 0.5-pixel steps. Footnotes are numbered in row order, using `description` or the full field name. Truncation produces warning `V-09`.
+
+SVG has three more strategies for the names of one- or two-bit fields. None of them is in the default order; add one to `svg.fit_order`, for example `[single, shrink, wrap, short, leader, truncate]`.
+
+| Strategy | Result |
+|---|---|
+| `leader` | The cell is left empty and the name is written below the row, hanging from a vertical line at the middle of the cell's bottom edge. Names that would overlap go on further lines down, and no line crosses a name. The space below the row grows by `leader_gap` plus one line (1.2 × `font_size`) per line of names. A field's `value` stays inside the cell. |
+| `rotate` | The name is turned 90 degrees, reading from bottom to top. The font size is the largest, from `font_size` down to `min_font_size` in 0.5-pixel steps, whose line height fits the cell's inner width; the row grows to the name's length. |
+| `footnote_shrink` | Like `footnote`, but the marker stays on one line, at the largest size down to `min_font_size` at which it fits. It shares the footnote numbering. |
+
+These strategies need a font size, so ASCII has none of them. Footnote numbers follow the drawing from left to right and top to bottom; with `field_order: lsb_first` that is the reverse of the order fields are listed in.
 
 ## Raster
 

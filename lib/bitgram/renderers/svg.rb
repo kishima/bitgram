@@ -9,6 +9,7 @@ require_relative "svg/font_family"
 require_relative "svg/geometry"
 require_relative "svg/decorations"
 require_relative "svg/cells"
+require_relative "svg/leaders"
 
 module Bitgram
   # @api private
@@ -61,7 +62,13 @@ module Bitgram
                                    footnote_marker: @document.ascii["footnote_marker"])
         @fits = @result.rows.map { |row| row.cells.map { |cell| fit_cell(cell) } }
         @footer = @fitter.footnotes + @document.notes
-        @geometry = Geometry.new(@result, @options, @fits, @footer, @measurer)
+        measure
+      end
+
+      def measure
+        @leaders = @result.rows.each_with_index.map { |row, index| place_leaders(row, @fits[index]) }
+        @geometry = Geometry.new(@result, @options, @fits, @footer, @measurer,
+                                 band_heights: @leaders.map { |labels| leader_band(labels) })
         @width = @geometry.width
         @height = @geometry.height
       end
@@ -76,8 +83,37 @@ module Bitgram
                       order: @options["fit_order"], path: "$.fields[#{@field_indexes.fetch(cell.field.id)}].name" }
         fit = @fitter.fit(text: label, short: cell.field.short, description: cell.field.description, **arguments)
         value = cell.field.value
-        value_fit = @fitter.fit(text: "= #{value}", **arguments) unless value.nil?
+        # A value stays inside its cell; only the name can hang below the row.
+        unless value.nil?
+          value_fit = @fitter.fit(text: "= #{value}", **arguments, order: arguments[:order] - ["leader"])
+        end
         [fit, value_fit]
+      end
+
+      # Leader names, with x relative to the left edge of the cells.
+      def place_leaders(row, fits)
+        items = row.cells.zip(fits).filter_map do |cell, (fit, _value)|
+          next unless fit.strategy == :leader
+
+          line_x = (cell.col + (cell.bits / 2.0)) * @options["bit_width"]
+          [line_x, fit.lines.first, @measurer.width(fit.lines.first), @options["font_size"]]
+        end
+        return [] if items.empty?
+
+        Leaders.place(items, right: @document.layout["row_bits"] * @options["bit_width"], space: @measurer.width(" "))
+      end
+
+      # The gap above the first level of names, then one line (font_size * 1.2, the pitch of
+      # wrapped labels) per level.
+      def leader_band(labels)
+        return 0 if labels.empty?
+
+        leader_gap + ((labels.map(&:level).max + 1) * @options["font_size"] * 1.2)
+      end
+
+      # Default 8: the space bitgram leaves between the rows and the footnotes (Geometry#footer_height).
+      def leader_gap
+        @options.fetch("leader_gap", 8)
       end
 
       def default_prefix
@@ -99,8 +135,9 @@ module Bitgram
           row.cells.each_with_index { |cell, col| draw_cell(cell, row, y, row_height, @fits[index][col]) }
           draw_ticks(row, y, row_height) if @options["ticks"]
           draw_offset(row, y, row_height)
+          draw_leaders(@leaders[index], y + row_height)
           @output << "</g>"
-          y += row_height
+          y += row_height + @geometry.band_heights[index]
         end
         @output << "</g>"
       end
@@ -108,7 +145,7 @@ module Bitgram
       def draw_footer
         return if @footer.empty?
 
-        y = @geometry.y + @geometry.row_heights.sum + 8 + @options["font_size"]
+        y = @geometry.y + @geometry.table_height + 8 + @options["font_size"]
         @output << '<g class="bg-footnotes">'
         @footer.each do |line|
           emit("text", text_attributes("bg-footnote").merge(x: @geometry.x, y: y, "text-anchor": "start"), line)
@@ -117,11 +154,22 @@ module Bitgram
         @output << "</g>"
       end
 
+      def draw_leaders(labels, bottom)
+        labels.each do |label|
+          top = bottom + leader_gap + (label.level * label.size * 1.2)
+          emit("line", { class: "bg-leader", x1: @geometry.x + label.line_x, y1: bottom,
+                         x2: @geometry.x + label.line_x, y2: top, stroke: @theme["stroke"], "stroke-width": 1 })
+          emit("text", text_attributes("bg-label bg-leader-label", label.size)
+                         .merge(x: @geometry.x + label.center, y: top + (label.size * 0.95)), label.text)
+        end
+      end
+
       def text_attributes(klass, size = @options["font_size"])
         attributes = { class: klass, "font-size": size, "text-anchor": "middle" }
         if @options["inline_styles"]
           attributes[:"font-family"] = FontFamily.css(@options["font_family"])
           attributes[:fill] = @theme["text"]
+          attributes[:style] = "font-variant-ligatures: none" if @options["ligatures"] == false
         end
         attributes
       end

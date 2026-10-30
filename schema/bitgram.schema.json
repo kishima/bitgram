@@ -343,7 +343,7 @@
         "fit_order": {
           "type": "array",
           "minItems": 1,
-          "maxItems": 7,
+          "maxItems": 10,
           "uniqueItems": true,
           "items": {
             "type": "string",
@@ -354,9 +354,20 @@
               "shrink",
               "vertical",
               "footnote",
-              "truncate"
+              "truncate",
+              "footnote_shrink",
+              "rotate",
+              "leader"
             ]
           }
+        },
+        "ligatures": {
+          "type": "boolean"
+        },
+        "leader_gap": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 4096
         }
       }
     },
